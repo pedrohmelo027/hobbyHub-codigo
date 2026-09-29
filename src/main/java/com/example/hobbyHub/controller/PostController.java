@@ -2,7 +2,6 @@ package com.example.hobbyHub.controller;
 
 import com.example.hobbyHub.dto.PostResponseDTO;
 import com.example.hobbyHub.service.PostService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,19 +13,23 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/posts")
-@RequiredArgsConstructor
+@CrossOrigin(origins = "*") // Permite o acesso do frontend local (Live Server ou arquivo aberto)
 public class PostController {
 
     private final PostService postService;
+
+    public PostController(PostService postService) {
+        this.postService = postService;
+    }
 
     // UC05 - Postar (agora com upload de arquivos)
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PostResponseDTO> criarPost(
             @RequestParam("conteudo") String conteudo,
             @RequestParam("usuarioId") Long usuarioId,
-            @RequestParam(value = "arquivos", required = false) List<MultipartFile> arquivos
+            @RequestParam(value = "arquivos", required = false) MultipartFile arquivo
     ) throws IOException {
-        PostResponseDTO response = postService.criarPost(conteudo, usuarioId, arquivos);
+        PostResponseDTO response = postService.criarPost(conteudo, usuarioId, arquivo);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

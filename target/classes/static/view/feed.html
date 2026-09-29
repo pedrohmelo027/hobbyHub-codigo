@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed do HobbyHub</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .main-wrapper {
+            max-width: 600px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .feed-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .post-card, .create-post-form {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .create-post-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .create-post-form textarea {
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 1em;
+            resize: vertical;
+            min-height: 80px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        .create-post-form input[type="file"] {
+            font-size: 0.9em;
+        }
+        .create-post-form button {
+            background-color: #1877f2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .create-post-form button:hover {
+            background-color: #166fe5;
+        }
+        .create-post-form button:disabled {
+            background-color: #a0c3ff;
+            cursor: not-allowed;
+        }
+        .post-header {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .post-author {
+            font-weight: bold;
+            color: #1c1e21;
+        }
+        .post-date {
+            color: #65676b;
+            font-size: 0.85em;
+        }
+        .post-content {
+            font-size: 1.05em;
+            line-height: 1.5;
+            color: #050505;
+            margin-bottom: 20px;
+            white-space: pre-wrap;
+        }
+        .post-images {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .post-images img {
+            width: 100%;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid #e4e6eb;
+        }
+        .loading {
+            text-align: center;
+            color: #65676b;
+            padding: 20px;
+            font-size: 1.2em;
+        }
+        .error {
+            color: #d93025;
+            text-align: center;
+            padding: 20px;
+            background-color: #fce8e6;
+            border-radius: 8px;
+        }
+        .header-title {
+            color: #1877f2;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h1 class="header-title">HobbyHub Feed</h1>
+    
+    <div class="main-wrapper">
+        <!-- Formulário de Criação de Post -->
+        <form class="create-post-form" id="create-post-form">
+            <textarea id="conteudo-input" placeholder="O que você está pensando?" required></textarea>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <input type="file" id="arquivos-input" multiple accept="image/*">
+                <button type="submit" id="submit-btn">Publicar</button>
+            </div>
+        </form>
+
+        <!-- Container do Feed -->
+        <div class="feed-container" id="feed-container">
+            <div class="loading" id="loading">Carregando posts...</div>
+        </div>
+    </div>
+
+    <script>
+        // Formatar data
+        function formatarData(dataString) {
+            const data = new Date(dataString);
+            return data.toLocaleString('pt-BR', { 
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            });
+        }
+
+        // Criar elemento HTML de um post
+        function criarElementoPost(post) {
+            const postCard = document.createElement('div');
+            postCard.className = 'post-card';
+
+            const header = document.createElement('div');
+            header.className = 'post-header';
+            
+            const author = document.createElement('div');
+            author.className = 'post-author';
+            author.textContent = `Usuário ${post.usuarioId}`; 
+            
+            const date = document.createElement('div');
+            date.className = 'post-date';
+            date.textContent = formatarData(post.dataCriacao);
+            
+            header.appendChild(author);
+            header.appendChild(date);
+            postCard.appendChild(header);
+
+            const content = document.createElement('div');
+            content.className = 'post-content';
+            content.textContent = post.conteudo;
+            postCard.appendChild(content);
+
+            if (post.midiaUrl) {
+                const imagesContainer = document.createElement('div');
+                imagesContainer.className = 'post-images';
+                
+                const img = document.createElement('img');
+                // Você pode usar `http://localhost:8080${post.midiaUrl}` se a imagem falhar por caminho relativo.
+                img.src = post.midiaUrl; 
+                img.alt = 'Mídia do post';
+                
+                img.onerror = function() {
+                    this.style.display = 'none';
+                };
+                
+                imagesContainer.appendChild(img);
+                postCard.appendChild(imagesContainer);
+            }
+
+            return postCard;
+        }
+
+        // Buscar posts e renderizar no feed
+        async function carregarFeed() {
+            const container = document.getElementById('feed-container');
+
+            try {
+                // A URL pode ser /api/posts ou http://localhost:8080/api/posts
+                const response = await fetch('http://localhost:8080/api/posts'); 
+                
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar posts da API.');
+                }
+                
+                const posts = await response.json();
+                
+                container.innerHTML = ''; // Limpa o carregando
+
+                if (posts.length === 0) {
+                    container.innerHTML = '<div style="text-align: center; color: #666;">Nenhum post encontrado. Seja o primeiro a postar!</div>';
+                    return;
+                }
+
+                posts.reverse().forEach(post => {
+                    const postElement = criarElementoPost(post);
+                    container.appendChild(postElement);
+                });
+
+            } catch (error) {
+                console.error("Erro:", error);
+                container.innerHTML = `<div class="error">Erro ao carregar o feed de posts. Verifique se a sua API está rodando.</div>`;
+            }
+        }
+
+        // Lógica para Criar um Novo Post
+        document.getElementById('create-post-form').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Evita recarregar a tela
+
+            const conteudo = document.getElementById('conteudo-input').value;
+            const arquivos = document.getElementById('arquivos-input').files;
+            const submitBtn = document.getElementById('submit-btn');
+
+            // Feedback visual enquanto carrega
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Publicando...';
+
+            // Montar o FormData para o envio "multipart/form-data" (idêntico ao form-data do Postman)
+            const formData = new FormData();
+            formData.append('conteudo', conteudo);
+            formData.append('usuarioId', '1'); // Passando 1 fixo conforme exemplo
+
+            for (let i = 0; i < arquivos.length; i++) {
+                formData.append('arquivos', arquivos[i]);
+            }
+
+            try {
+                const response = await fetch('http://localhost:8080/api/posts', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro na API ao criar o post.');
+                }
+
+                // Sucesso: limpar o formulário e recarregar o feed
+                document.getElementById('create-post-form').reset();
+                document.getElementById('feed-container').innerHTML = '<div class="loading">Atualizando feed...</div>';
+                await carregarFeed();
+
+            } catch (error) {
+                console.error("Erro ao publicar:", error);
+                alert("Houve um erro ao publicar o post. Verifique o console.");
+            } finally {
+                // Restaura o botão
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Publicar';
+            }
+        });
+
+        // Carrega o feed ao iniciar a página
+        document.addEventListener('DOMContentLoaded', carregarFeed);
+    </script>
+</body>
+</html>

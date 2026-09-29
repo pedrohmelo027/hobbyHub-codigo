@@ -2,10 +2,8 @@ package com.example.hobbyHub.service;
 
 import com.example.hobbyHub.dto.PostResponseDTO;
 import com.example.hobbyHub.model.Post;
-import com.example.hobbyHub.model.PostMidia;
 import com.example.hobbyHub.model.TipoMidia;
 import com.example.hobbyHub.repository.PostRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,34 +17,28 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class PostService {
 
     private final PostRepository postRepository;
 
+    public PostService(PostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
+
     @Value("${app.upload.dir}")
     private String uploadDir;
 
-    public PostResponseDTO criarPost(String conteudo, Long usuarioId, List<MultipartFile> arquivos) throws IOException {
-        Post post = Post.builder()
-                .conteudo(conteudo)
-                .usuarioId(usuarioId)
-                .build();
+    public PostResponseDTO criarPost(String conteudo, Long usuarioId, MultipartFile arquivo) throws IOException {
+        Post post = new Post();
+        post.setConteudo(conteudo);
+        post.setUsuarioId(usuarioId);
 
-        if (arquivos != null) {
-            for (MultipartFile arquivo : arquivos) {
-                if (arquivo.isEmpty()) continue;
+        if (arquivo != null && !arquivo.isEmpty()) {
+            String nomeArquivo = salvarArquivoNoDisco(arquivo);
+            TipoMidia tipo = detectarTipo(arquivo);
 
-                String nomeArquivo = salvarArquivoNoDisco(arquivo);
-                TipoMidia tipo = detectarTipo(arquivo);
-
-                PostMidia midia = PostMidia.builder()
-                        .url("/uploads/" + nomeArquivo)
-                        .tipo(tipo)
-                        .build();
-
-                post.adicionarMidia(midia);
-            }
+            post.setMidiaUrl("/uploads/" + nomeArquivo);
+            post.setTipo(tipo);
         }
 
         Post salvo = postRepository.save(post);
@@ -94,17 +86,12 @@ public class PostService {
     }
 
     private PostResponseDTO toResponseDTO(Post post) {
-        List<String> midiaUrls = post.getMidias()
-                .stream()
-                .map(PostMidia::getUrl)
-                .toList();
-
         return new PostResponseDTO(
                 post.getId(),
                 post.getConteudo(),
                 post.getUsuarioId(),
                 post.getDataCriacao(),
-                midiaUrls
+                post.getMidiaUrl()
         );
     }
 }
