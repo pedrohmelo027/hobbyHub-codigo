@@ -1,9 +1,0 @@
-/home/pedro/Documents/hobbyHub/hobbyHub-codigo/src/main/java/com/example/hobbyHub/HobbyHubApplication.java
-/home/pedro/Documents/hobbyHub/hobbyHub-codigo/src/main/java/com/example/hobbyHub/config/WebConfig.java
-/home/pedro/Documents/hobbyHub/hobbyHub-codigo/src/main/java/com/example/hobbyHub/controller/PostController.java
-/home/pedro/Documents/hobbyHub/hobbyHub-codigo/src/main/java/com/example/hobbyHub/dto/PostRequestDTO.java
-/home/pedro/Documents/hobbyHub/hobbyHub-codigo/src/main/java/com/example/hobbyHub/dto/PostResponseDTO.java
-/home/pedro/Documents/hobbyHub/hobbyHub-codigo/src/main/java/com/example/hobbyHub/model/Post.java
-/home/pedro/Documents/hobbyHub/hobbyHub-codigo/src/main/java/com/example/hobbyHub/model/TipoMidia.java
-/home/pedro/Documents/hobbyHub/hobbyHub-codigo/src/main/java/com/example/hobbyHub/repository/PostRepository.java
-/home/pedro/Documents/hobbyHub/hobbyHub-codigo/src/main/java/com/example/hobbyHub/service/PostService.java

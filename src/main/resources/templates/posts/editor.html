@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+    <body>
+        <form
+            th:fragment="editor(noFeed)"
+            class="card"
+            th:action="@{/posts}"
+            th:object="${postForm}"
+            method="post"
+            enctype="multipart/form-data"
+        >
+            <input type="hidden" name="noFeed" th:value="${noFeed}" />
+            <div role="alert" class="error" th:if="${#fields.hasAnyErrors()}">
+                <p th:each="erro : ${#fields.allErrors()}" th:text="${erro}"></p>
+            </div>
+            <label for="conteudo">Conteúdo *</label>
+            <textarea
+                id="conteudo"
+                th:field="*{conteudo}"
+                rows="7"
+                maxlength="2000"
+                placeholder="Uma descoberta, uma conquista ou algo que você ama fazer…"
+                required
+            ></textarea>
+            <small>Até 2000 caracteres.</small>
+            <div class="columns">
+                <div>
+                    <label for="tagGeralId">Tag geral *</label>
+                    <select id="tagGeralId" th:field="*{tagGeralId}" required>
+                        <option value="">Selecione</option>
+                        <option
+                            th:each="tag : ${tagsGerais}"
+                            th:value="${tag.id}"
+                            th:text="${tag.nome}"
+                        ></option>
+                    </select>
+                </div>
+                <div>
+                    <label for="tagEspecificaId">Tag específica *</label>
+                    <select id="tagEspecificaId" th:field="*{tagEspecificaId}" required>
+                        <option value="">Selecione</option>
+                        <option
+                            th:each="tag : ${tagsEspecificas}"
+                            th:value="${tag.id}"
+                            th:text="${tag.nome}"
+                            th:attr="data-tag-geral-id=${tag.tagGeral != null ? tag.tagGeral.id : ''}"
+                        ></option>
+                    </select>
+                </div>
+            </div>
+            <label for="arquivo">Imagem ou vídeo (opcional)</label>
+            <input
+                id="arquivo"
+                name="arquivo"
+                type="file"
+                accept=".jpg,.jpeg,.png,.gif,.webp,.mp4,.webm"
+            />
+            <small>
+                JPG, JPEG, PNG, GIF, WEBP, MP4 ou WEBM. Máximo de 25 MB. Se ocorrer um erro,
+                selecione o arquivo novamente.
+            </small>
+            <div class="form-actions">
+                <a th:if="${!noFeed}" th:href="@{/posts}">Cancelar</a>
+                <button th:if="${noFeed}" class="secondary" type="button" onclick="this.closest('details').open = false">Cancelar</button>
+                <button type="submit">Publicar post</button>
+            </div>
+        </form>
+    </body>
+</html>

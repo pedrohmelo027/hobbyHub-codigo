@@ -1,0 +1,140 @@
+classDiagram
+    direction TB
+
+    namespace controller {
+        class PostController {
+            -postService : PostService
+            +formulario(model : Model) String
+            +feed(model : Model) String
+        }
+        class PostApiController {
+            -postService : PostService
+            +listar() List~PostView~
+        }
+        class MidiaController {
+            -armazenamentoMidiaService : ArmazenamentoMidiaService
+            +visualizar(nome : String) ResponseEntity~Resource~
+        }
+    }
+
+    namespace service {
+        class PostService {
+            -postRepository : PostRepository
+            -usuarioRepository : UsuarioRepository
+            -tagRepository : TagRepository
+            -armazenamentoMidiaService : ArmazenamentoMidiaService
+            +postar(form : PostForm, email : String, arquivo : MultipartFile) PostView
+            +listar() List~PostView~
+            +listarTags(tipo : TipoDeTag) List~Tag~
+        }
+        class ArmazenamentoMidiaService {
+            -diretorio : Path
+            -limiteBytes : long
+            +salvar(arquivo : MultipartFile) String
+            +carregar(nome : String) Resource
+            +obterTipoConteudo(nome : String) MediaType
+            +excluir(url : String) void
+        }
+    }
+
+    namespace repository {
+        class PostRepository {
+            <<interface>>
+            +findAllByOrderByDataCriacaoDescIdDesc() List~Post~
+        }
+        class UsuarioRepository {
+            <<interface>>
+            +findByEmail(email : String) Optional~Usuario~
+        }
+        class TagRepository {
+            <<interface>>
+            +findByTipoOrderByNomeAsc(tipo : TipoDeTag) List~Tag~
+            +findByNomeAndTipo(nome : String, tipo : TipoDeTag) Optional~Tag~
+        }
+    }
+
+    namespace dto {
+        class PostForm {
+            -conteudo : String
+            -tagGeralId : Long
+            -tagEspecificaId : Long
+        }
+        class PostView {
+            <<record>>
+            -id : Long
+            -conteudo : String
+            -dataCriacao : LocalDateTime
+            -urlImagem : String
+            -autor : String
+            -tags : List~String~
+            +from(post : Post) PostView$
+            +isVideo() boolean
+        }
+    }
+
+    namespace model {
+        class Post {
+            -id : Long
+            -conteudo : String
+            -dataCriacao : LocalDateTime
+            -urlImagem : String
+            -prepararPublicacao() void
+            -validarConteudo() void
+            -validarAutorETags() void
+        }
+        class Usuario {
+            -id : Long
+            -nome : String
+            -email : String
+            -biografia : String
+            -nomeUsuario : String
+            -senha : String
+            -role : Role
+        }
+        class Tag {
+            -id : Long
+            -nome : String
+            -tipo : TipoDeTag
+            +pertenceA(geral : Tag) boolean
+            +especifica(nome : String, tagGeral : Tag) Tag$
+            -validarHierarquia() void
+        }
+        class Role {
+            <<enumeration>>
+            USUARIO
+            ADMIN
+        }
+        class TipoDeTag {
+            <<enumeration>>
+            GERAL
+            ESPECIFICA
+        }
+    }
+
+    PostController --> PostService : postService
+    PostApiController --> PostService : postService
+    MidiaController --> ArmazenamentoMidiaService : armazenamentoMidiaService
+    PostService --> PostRepository : postRepository
+    PostService --> UsuarioRepository : usuarioRepository
+    PostService --> TagRepository : tagRepository
+    PostService --> ArmazenamentoMidiaService : armazenamentoMidiaService
+    PostController ..> PostForm
+    PostApiController ..> PostForm
+    PostApiController ..> PostView
+    PostService ..> PostForm
+    PostService ..> PostView
+    PostService ..> Post
+    PostService ..> TipoDeTag
+    PostRepository ..> Post
+    UsuarioRepository ..> Usuario
+    TagRepository ..> Tag
+    TagRepository ..> TipoDeTag
+    PostView ..> Post : from
+    Post "0..*" --> "1" Usuario : usuario
+    Post "0..*" o--> "2" Tag : tags
+    Usuario "0..*" o--> "0..*" Tag : tagsSeguidas
+    Tag "0..*" --> "0..1" Tag : tagGeral
+    Usuario ..> Role
+    Tag ..> TipoDeTag
+    note for Tag "GERAL: sem pai. ESPECIFICA: exatamente um pai GERAL."
+    note for Post "Duas tags: uma GERAL e uma ESPECIFICA pertencente a ela. urlImagem referencia o arquivo armazenado."

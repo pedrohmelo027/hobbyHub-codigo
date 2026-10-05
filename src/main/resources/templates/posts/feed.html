@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Feed · HobbyHub</title>
+        <link rel="stylesheet" th:href="@{/css/style.css}" />
+        <script th:src="@{/js/tags.js}" defer></script>
+    </head>
+    <body>
+        <header th:replace="~{fragments :: cabecalho}"></header>
+        <main>
+            <p class="eyebrow">COMUNIDADE HOBBYHUB</p>
+            <h1>
+                Pequenas paixões.
+                <br />
+                Grandes conexões.
+            </h1>
+            <p>Veja o que a comunidade está criando, praticando e descobrindo.</p>
+            <p role="status" class="success" th:if="${sucesso}" th:text="${sucesso}"></p>
+            <details id="novo-post" class="feed-compose" th:open="${abrirEditor}">
+                <summary aria-label="Criar post">
+                    <span class="compose-plus" aria-hidden="true">+</span>
+                    <span>Compartilhar um hobby</span>
+                </summary>
+                <h2>O que você está curtindo?</h2>
+                <p>Escolha uma tag geral e uma específica para seu post.</p>
+                <form th:replace="~{posts/editor :: editor(true)}"></form>
+            </details>
+            <section class="empty" th:if="${#lists.isEmpty(posts)}">
+                <h2>O primeiro post pode ser seu.</h2>
+                <p>Conte para a comunidade sobre um hobby.</p>
+                <p>Use o botão + acima para criar seu primeiro post.</p>
+            </section>
+            <section aria-label="Postagens">
+                <article class="card" th:each="post : ${posts}">
+                    <div class="post-header">
+                        <strong th:text="${'@' + post.autor}"></strong>
+                        <time
+                            th:datetime="${post.dataCriacao}"
+                            th:text="${#temporals.format(post.dataCriacao,'dd/MM/yyyy HH:mm')}"
+                        ></time>
+                    </div>
+                    <p class="content" th:text="${post.conteudo}"></p>
+                    <img
+                        class="post-image"
+                        th:if="${post.urlImagem != null and !post.video}"
+                        th:src="${post.urlImagem}"
+                        alt="Imagem compartilhada pelo autor"
+                        loading="lazy"
+                        referrerpolicy="no-referrer"
+                    />
+                    <video
+                        class="post-image"
+                        th:if="${post.urlImagem != null and post.video}"
+                        th:src="${post.urlImagem}"
+                        controls
+                        preload="metadata"
+                    >
+                        Seu navegador não conseguiu reproduzir este vídeo.
+                        <a th:href="${post.urlImagem}">Abrir arquivo</a>
+                    </video>
+                    <div class="tags">
+                        <span th:each="tag : ${post.tags}" th:text="${tag}"></span>
+                    </div>
+                </article>
+            </section>
+        </main>
+    </body>
+</html>
