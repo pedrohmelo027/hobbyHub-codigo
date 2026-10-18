@@ -1,15 +1,35 @@
-target/
-data/
+# Maven outputs
+**/target/
+*.jar
+*.war
+
+# Runtime database backups and uploaded media
+/data/
+
+# Local Puppeteer runtime used by diagram generation
+/scripts/.runtime/
+
+# IDE files
 .idea/
-*.iml
 .vscode/
+*.iml
 .classpath
 .project
 .settings/
-*.log
+
+# Local secrets and environment overrides
 .env
 .env.*
 !.env.example
+
+# Logs, temporary files, and crash dumps
+*.log
+*.tmp
+*.swp
+hs_err_pid*.log
+replay_pid*.log
+
+# Operating system files
 Thumbs.db
 Desktop.ini
 .DS_Store

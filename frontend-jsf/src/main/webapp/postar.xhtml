@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets" lang="pt-BR">
+<f:metadata>
+    <f:viewAction action="#{postBean.carregar}" />
+</f:metadata>
+<h:head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Novo post · HobbyHub</title>
+    <h:outputStylesheet library="css" name="hobbyhub.css" />
+</h:head>
+<h:body>
+    <header class="site-header">
+        <nav class="site-nav" aria-label="Navegação principal">
+            <a class="brand" href="#{request.contextPath}/feed.xhtml" aria-label="HobbyHub, início">
+                <h:graphicImage library="images" name="hobbyhub-logo.png" styleClass="brand-logo" alt="HobbyHub" />
+            </a>
+            <div class="nav-search" aria-label="Pesquisa de tags"><span>Pesquisar tags</span><span class="search-icon" aria-hidden="true"></span></div>
+            <div class="nav-actions">
+                <h:link value="Home" outcome="/feed.xhtml" styleClass="nav-link" />
+                <h:link value="Postar" outcome="/postar.xhtml" styleClass="nav-link active" />
+                <h:form id="sessao"><h:commandButton value="Sair" action="#{loginBean.sair}" styleClass="nav-logout" /></h:form>
+            </div>
+        </nav>
+    </header>
+    <main class="compose compose-page">
+        <p class="eyebrow">SEU PRÓXIMO HOBBY MOMENT</p>
+        <h1>O que quer compartilhar hoje?</h1>
+        <p>Conte sua atividade e escolha as tags que combinam com ela.</p>
+        <h:messages id="mensagens" styleClass="messages" errorClass="error" infoClass="success" />
+        <ui:include src="/WEB-INF/fragmentos/formulario-post.xhtml" />
+    </main>
+</h:body>
+</html>
