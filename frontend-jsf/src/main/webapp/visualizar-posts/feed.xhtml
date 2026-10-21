@@ -1,0 +1,79 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                template="/WEB-INF/templates/base.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{visualizarPostsBean.carregar}" />
+        <f:viewAction action="#{postarBean.carregarFormulario}" />
+    </f:metadata>
+    <ui:define name="title">Feed · HobbyHub</ui:define>
+    <ui:define name="header">
+        <ui:include src="/WEB-INF/templates/navbar.xhtml">
+            <ui:param name="paginaAtiva" value="feed" />
+        </ui:include>
+    </ui:define>
+    <ui:define name="content">
+        <main class="feed-main">
+            <div class="feed-heading">
+                <div><p class="eyebrow">HOBBYHUB · COMUNIDADE</p><h1>O que a galera está fazendo</h1></div>
+                <h:link value="Atualizar feed" outcome="/visualizar-posts/feed.xhtml" styleClass="refresh-link" />
+            </div>
+            <ui:include src="/WEB-INF/templates/mensagens.xhtml" />
+            <h:form id="editar" rendered="#{not empty visualizarPostsBean.postEmEdicaoId}" styleClass="card post-edit">
+                <h2>Editar seu post</h2>
+                <h:outputLabel for="texto" value="Editar texto" />
+                <h:inputTextarea id="texto" value="#{visualizarPostsBean.edicao.conteudo}" rows="5" required="true"
+                                 requiredMessage="Escreva o conteúdo do post." pt:maxlength="2000">
+                    <f:validateBean />
+                </h:inputTextarea>
+                <small>A edição mantém as tags, a mídia e a data original.</small>
+                <div class="form-actions">
+                    <h:commandButton value="Cancelar edição" action="#{visualizarPostsBean.cancelarEdicao}" immediate="true" styleClass="secondary" />
+                    <h:commandButton value="Salvar texto" action="#{visualizarPostsBean.salvarEdicao}" />
+                </div>
+            </h:form>
+            <details id="novo-post" class="feed-compose"
+                     open="#{postarBean.editorAberto or facesContext.validationFailed ? 'open' : null}">
+                <summary aria-label="Criar post"><span class="compose-plus" aria-hidden="true">+</span><span>Compartilhar um hobby</span></summary>
+                <h2>O que você está curtindo?</h2>
+                <ui:include src="/WEB-INF/postar/formulario-post.xhtml" />
+            </details>
+            <ui:fragment rendered="#{empty visualizarPostsBean.posts}">
+                <section class="empty"><h2>O primeiro post pode ser seu.</h2><p>Use o botão + para compartilhar um hobby.</p></section>
+            </ui:fragment>
+            <section aria-label="Postagens">
+                <ui:repeat value="#{visualizarPostsBean.posts}" var="post">
+                    <article class="post-card">
+                        <div class="post-header">
+                            <ui:include src="/WEB-INF/templates/avatar.xhtml">
+                                <ui:param name="classe" value="" />
+                            </ui:include>
+                            <strong class="post-author"><h:outputText value="#{post.autor}" /></strong>
+                            <div class="tags"><ui:repeat value="#{post.tags}" var="tag"><span><h:outputText value="#{tag}" /></span></ui:repeat></div>
+                        </div>
+                        <ui:fragment rendered="#{not empty post.urlImagem and not post.video}">
+                            <img class="post-image" src="#{request.contextPath}#{post.urlImagem}" alt="Imagem compartilhada pelo autor" loading="lazy" />
+                        </ui:fragment>
+                        <ui:fragment rendered="#{not empty post.urlImagem and post.video}">
+                            <video class="post-image" src="#{request.contextPath}#{post.urlImagem}" controls="controls" preload="metadata">
+                                Seu navegador não conseguiu reproduzir o vídeo.
+                            </video>
+                        </ui:fragment>
+                        <p class="content"><h:outputText value="#{post.conteudo}" /></p>
+                        <ui:fragment rendered="#{post.proprio}">
+                            <h:form id="acoes" rendered="#{visualizarPostsBean.postEmEdicaoId ne post.id}" styleClass="post-actions">
+                                <h:commandButton value="Editar texto" action="#{visualizarPostsBean.iniciarEdicao(post)}" styleClass="secondary" />
+                                <h:commandButton value="Apagar post" action="#{visualizarPostsBean.excluir(post)}" styleClass="danger"
+                                                 onclick="return confirm('Apagar este post e sua mídia? Esta ação não pode ser desfeita.');" />
+                            </h:form>
+                        </ui:fragment>
+                        <time class="post-date"><h:outputText value="#{post.dataFormatada}" /></time>
+                    </article>
+                </ui:repeat>
+            </section>
+        </main>
+        <h:link outcome="/postar/postar.xhtml" styleClass="floating-post" pt:aria-label="Criar post"><span aria-hidden="true">+</span></h:link>
+    </ui:define>
+</ui:composition>

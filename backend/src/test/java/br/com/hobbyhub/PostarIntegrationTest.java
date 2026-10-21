@@ -249,7 +249,7 @@ class PostarIntegrationTest {
         String url =
                 transacao.execute(
                         status -> {
-                            br.com.hobbyhub.dto.PostFormDTO form = new br.com.hobbyhub.dto.PostFormDTO();
+                            br.com.hobbyhub.dto.PostarFormDTO form = new br.com.hobbyhub.dto.PostarFormDTO();
                             form.setConteudo("Post cancelado");
                             form.setTagGeralId(geral);
                             form.setTagEspecificaId(especifica);
@@ -279,7 +279,7 @@ class PostarIntegrationTest {
                 .andExpect(status().isNotFound());
     }
 
-    @Autowired br.com.hobbyhub.service.PostService postService;
+    @Autowired br.com.hobbyhub.service.PostarService postService;
     @Autowired org.springframework.transaction.PlatformTransactionManager transactionManager;
 
     private org.springframework.test.web.servlet.ResultActions publicarArquivo(MockMultipartFile arquivo) throws Exception {
