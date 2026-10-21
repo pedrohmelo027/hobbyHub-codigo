@@ -1,0 +1,53 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <h:form id="postar" enctype="multipart/form-data" styleClass="card publish-form">
+        <div class="publish-form-heading">
+            <ui:include src="/WEB-INF/templates/avatar.xhtml">
+                <ui:param name="classe" value="avatar-small" />
+            </ui:include>
+            <div><h2>Compartilhe um momento</h2><p>Uma descoberta, uma conquista ou algo que você ama fazer.</p></div>
+        </div>
+        <h:outputLabel for="conteudo" value="Sua história *" />
+        <h:inputTextarea id="conteudo" value="#{postarBean.form.conteudo}" rows="7" required="true"
+                         requiredMessage="Escreva o conteúdo do post." pt:maxlength="2000"
+                         pt:placeholder="Uma descoberta, uma conquista ou algo que você ama fazer…">
+            <f:validateBean />
+        </h:inputTextarea>
+        <small>Até 2000 caracteres.</small>
+        <div class="columns">
+            <div>
+                <h:outputLabel for="geral" value="Tag geral *" />
+                <h:selectOneMenu id="geral" value="#{postarBean.form.tagGeralId}" required="true"
+                                 requiredMessage="Selecione uma tag geral.">
+                    <f:validateBean />
+                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+                    <f:selectItems value="#{postarBean.tagsGerais}" var="tag" itemValue="#{tag.id}" itemLabel="#{tag.nome}" />
+                    <f:ajax execute="@this" render="especifica" listener="#{postarBean.alterarTagGeral}" />
+                </h:selectOneMenu>
+            </div>
+            <div>
+                <h:outputLabel for="especifica" value="Tag específica *" />
+                <h:selectOneMenu id="especifica" value="#{postarBean.form.tagEspecificaId}" required="true"
+                                 requiredMessage="Selecione uma tag específica." disabled="#{empty postarBean.form.tagGeralId}">
+                    <f:validateBean />
+                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+                    <f:selectItems value="#{postarBean.tagsEspecificasDisponiveis}" var="tag" itemValue="#{tag.id}" itemLabel="#{tag.nome}" />
+                </h:selectOneMenu>
+            </div>
+        </div>
+        <h:outputLabel for="arquivo" value="Adicione uma imagem ou vídeo (opcional)" />
+        <div class="media-picker">
+            <span class="media-plus" aria-hidden="true">+</span>
+            <span class="media-prompt">Escolha uma imagem ou vídeo</span>
+            <h:inputFile id="arquivo" value="#{postarBean.arquivo}" pt:accept=".jpg,.jpeg,.png,.gif,.webp,.mp4,.webm" />
+        </div>
+        <small>JPG, JPEG, PNG, GIF, WEBP, MP4 ou WEBM. Até 25 MB. Após um erro, selecione o arquivo novamente.</small>
+        <div class="form-actions">
+            <h:link value="Voltar ao feed" outcome="/visualizar-posts/feed.xhtml" styleClass="button secondary" />
+            <h:commandButton id="publicar" value="Publicar post" action="#{postarBean.publicar}" />
+        </div>
+    </h:form>
+</ui:composition>
