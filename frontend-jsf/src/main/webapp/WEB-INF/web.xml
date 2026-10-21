@@ -39,11 +39,11 @@
     </filter>
     <filter-mapping>
         <filter-name>AcessoFilter</filter-name>
-        <url-pattern>/feed.xhtml</url-pattern>
+        <url-pattern>/visualizar-posts/*</url-pattern>
     </filter-mapping>
     <filter-mapping>
         <filter-name>AcessoFilter</filter-name>
-        <url-pattern>/postar.xhtml</url-pattern>
+        <url-pattern>/postar/*</url-pattern>
     </filter-mapping>
     <filter-mapping>
         <filter-name>AcessoFilter</filter-name>
@@ -57,6 +57,6 @@
         </cookie-config>
     </session-config>
     <welcome-file-list>
-        <welcome-file>feed.xhtml</welcome-file>
+        <welcome-file>visualizar-posts/feed.xhtml</welcome-file>
     </welcome-file-list>
 </web-app>

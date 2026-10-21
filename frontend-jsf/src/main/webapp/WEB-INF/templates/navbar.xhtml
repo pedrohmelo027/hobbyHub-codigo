@@ -1,0 +1,19 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <header class="site-header">
+        <nav class="site-nav" aria-label="Navegação principal">
+            <ui:include src="/WEB-INF/templates/marca.xhtml">
+                <ui:param name="destino" value="/visualizar-posts/feed.xhtml" />
+            </ui:include>
+            <div class="nav-search" aria-label="Pesquisa de tags"><span>Pesquisar tags</span><span class="search-icon" aria-hidden="true"></span></div>
+            <div class="nav-actions">
+                <h:link value="Home" outcome="/visualizar-posts/feed.xhtml"
+                        styleClass="#{paginaAtiva eq 'feed' ? 'nav-link active' : 'nav-link'}" />
+                <h:link value="Postar" outcome="/postar/postar.xhtml"
+                        styleClass="#{paginaAtiva eq 'postar' ? 'nav-link active' : 'nav-link'}" />
+                <h:form id="sessao"><h:commandButton value="Sair" action="#{loginBean.sair}" styleClass="nav-logout" /></h:form>
+            </div>
+        </nav>
+    </header>
+</ui:composition>

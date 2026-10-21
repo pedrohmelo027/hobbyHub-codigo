@@ -1,6 +1,6 @@
 package br.com.hobbyhub.jsf.config;
 
-import br.com.hobbyhub.jsf.service.HobbyHubService;
+import br.com.hobbyhub.jsf.utils.HobbyHubApiClient;
 import javax.inject.Inject;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -14,7 +14,7 @@ import java.io.IOException;
 public class AcessoFilter implements Filter {
 
     @Inject
-    private HobbyHubService api;
+    private HobbyHubApiClient api;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -22,10 +22,10 @@ public class AcessoFilter implements Filter {
         HttpServletRequest requisicao = (HttpServletRequest) request;
         HttpServletResponse resposta = (HttpServletResponse) response;
         String caminho = requisicao.getServletPath();
-        if ((caminho.equals("/feed.xhtml") || caminho.equals("/postar.xhtml")
+        if ((caminho.startsWith("/visualizar-posts/") || caminho.startsWith("/postar/")
                 || caminho.startsWith("/midias/")) && !api.isAutenticado()) {
             if (caminho.startsWith("/midias/")) resposta.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            else resposta.sendRedirect(requisicao.getContextPath() + "/login.xhtml");
+            else resposta.sendRedirect(requisicao.getContextPath() + "/logar/login.xhtml");
             return;
         }
         chain.doFilter(request, response);
