@@ -8,7 +8,9 @@
         <h:outputStylesheet library="css" name="hobbyhub.css" />
     </h:head>
     <h:body>
-        <ui:insert name="header" />
+        <ui:include src="/WEB-INF/templates/navbar.xhtml">
+            <ui:param name="paginaAtiva" value="#{paginaAtiva}" />
+        </ui:include>
         <ui:insert name="content" />
     </h:body>
 </html>
