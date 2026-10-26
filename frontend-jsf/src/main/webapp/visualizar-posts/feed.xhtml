@@ -4,16 +4,12 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 template="/WEB-INF/templates/base.xhtml">
+    <ui:param name="paginaAtiva" value="feed" />
     <f:metadata>
         <f:viewAction action="#{visualizarPostsBean.carregar}" />
         <f:viewAction action="#{postarBean.carregarFormulario}" />
     </f:metadata>
     <ui:define name="title">Feed · HobbyHub</ui:define>
-    <ui:define name="header">
-        <ui:include src="/WEB-INF/templates/navbar.xhtml">
-            <ui:param name="paginaAtiva" value="feed" />
-        </ui:include>
-    </ui:define>
     <ui:define name="content">
         <main class="feed-main">
             <div class="feed-heading">
@@ -38,7 +34,7 @@
                      open="#{postarBean.editorAberto or facesContext.validationFailed ? 'open' : null}">
                 <summary aria-label="Criar post"><span class="compose-plus" aria-hidden="true">+</span><span>Compartilhar um hobby</span></summary>
                 <h2>O que você está curtindo?</h2>
-                <ui:include src="/WEB-INF/postar/formulario-post.xhtml" />
+                <ui:include src="/postar/formulario-post.xhtml" />
             </details>
             <ui:fragment rendered="#{empty visualizarPostsBean.posts}">
                 <section class="empty"><h2>O primeiro post pode ser seu.</h2><p>Use o botão + para compartilhar um hobby.</p></section>
