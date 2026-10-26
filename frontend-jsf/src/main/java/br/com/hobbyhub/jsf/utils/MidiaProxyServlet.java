@@ -1,7 +1,5 @@
 package br.com.hobbyhub.jsf.utils;
 
-import br.com.hobbyhub.jsf.utils.ApiException;
-import br.com.hobbyhub.jsf.utils.HobbyHubApiClient;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
