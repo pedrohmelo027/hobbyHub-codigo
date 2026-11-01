@@ -1,5 +1,6 @@
 package br.com.hobbyhub.jsf.utils;
 
+import br.com.hobbyhub.jsf.dto.CadastrarUsuarioFormDTO;
 import br.com.hobbyhub.jsf.dto.PostEdicaoFormDTO;
 import br.com.hobbyhub.jsf.dto.PostFormDTO;
 import br.com.hobbyhub.jsf.dto.PostViewDTO;
@@ -19,6 +20,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -85,6 +87,31 @@ public class HobbyHubApiClient implements Serializable {
 
     public List<TagViewDTO> listarTags(String tipo) {
         return Arrays.asList(ler(enviar(requisicao("api/tags?tipo=" + codificar(tipo)).GET()), TagViewDTO[].class));
+    }
+
+    public List<TagViewDTO> listarTagsDisponiveis() {
+        List<TagViewDTO> tags = new ArrayList<>(listarTags("GERAL"));
+        tags.addAll(listarTags("ESPECIFICA"));
+        return tags;
+    }
+
+    public void cadastrarUsuario(CadastrarUsuarioFormDTO form, Part foto) {
+        try {
+            HttpRequest.Builder request = requisicao("api/usuarios").header("X-CSRF-TOKEN", csrf());
+            if (foto == null || foto.getSize() == 0) {
+                enviar(request.header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofByteArray(JSON.writeValueAsBytes(form))));
+                return;
+            }
+            if (foto.getSize() > 5L * 1024 * 1024) {
+                throw new ApiException("A foto deve ter no máximo 5 MB.");
+            }
+            String boundary = "HobbyHub" + UUID.randomUUID().toString().replace("-", "");
+            enviar(request.header("Content-Type", "multipart/form-data; boundary=" + boundary)
+                    .POST(HttpRequest.BodyPublishers.ofByteArray(multipartCadastro(form, foto, boundary))));
+        } catch (IOException erro) {
+            throw new ApiException("Não foi possível preparar o cadastro.", erro);
+        }
     }
 
     public void postar(PostFormDTO form, Part arquivo) {
@@ -209,6 +236,23 @@ public class HobbyHubApiClient implements Serializable {
         String nome = arquivo.getSubmittedFileName().replaceAll("[^a-zA-Z0-9._-]", "_");
         texto(corpo, "--" + boundary + "\r\nContent-Disposition: form-data; name=\"arquivo\"; filename=\"" + nome
                 + "\"\r\nContent-Type: application/octet-stream\r\n\r\n");
+        try (var entrada = arquivo.getInputStream()) {
+            entrada.transferTo(corpo);
+        }
+        texto(corpo, "\r\n--" + boundary + "--\r\n");
+        return corpo.toByteArray();
+    }
+
+    private byte[] multipartCadastro(CadastrarUsuarioFormDTO form, Part arquivo, String boundary)
+            throws IOException {
+        ByteArrayOutputStream corpo = new ByteArrayOutputStream();
+        texto(corpo, "--" + boundary + "\r\nContent-Disposition: form-data; name=\"form\"\r\n"
+                + "Content-Type: application/json; charset=UTF-8\r\n\r\n");
+        corpo.write(JSON.writeValueAsBytes(form));
+        texto(corpo, "\r\n");
+        String nome = arquivo.getSubmittedFileName().replaceAll("[^a-zA-Z0-9._-]", "_");
+        texto(corpo, "--" + boundary + "\r\nContent-Disposition: form-data; name=\"foto\"; filename=\""
+                + nome + "\"\r\nContent-Type: application/octet-stream\r\n\r\n");
         try (var entrada = arquivo.getInputStream()) {
             entrada.transferTo(corpo);
         }

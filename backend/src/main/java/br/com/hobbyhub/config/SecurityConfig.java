@@ -39,7 +39,7 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http, ObjectMapper json) throws Exception {
         return http
                 .authorizeHttpRequests(regras -> regras
-                        .requestMatchers("/api/csrf", "/api/login", "/error",
+                        .requestMatchers("/api/csrf", "/api/login", "/api/usuarios", "/api/tags", "/error",
                                 "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**")
                         .permitAll()
                         .anyRequest().authenticated())
