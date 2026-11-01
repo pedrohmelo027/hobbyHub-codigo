@@ -37,6 +37,9 @@ public class Usuario {
 
     private String biografia;
 
+    @Column(length = 500)
+    private String urlFotoPerfil;
+
     @Column(nullable = false, unique = true)
     private String nomeUsuario;
 
