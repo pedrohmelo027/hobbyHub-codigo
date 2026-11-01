@@ -17,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -25,6 +26,7 @@ public class MidiaService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MidiaService.class);
     private static final String PREFIXO_URL = "/midias/";
     private static final String PADRAO_NOME = "[a-f0-9-]{36}\\.(jpg|jpeg|png|gif|webp|mp4|webm)";
+    private static final long LIMITE_FOTO_BYTES = 5L * 1024 * 1024;
 
     private final Path diretorio;
     private final long limiteBytes;
@@ -66,6 +68,20 @@ public class MidiaService {
         } finally {
             removerTemporario(temporario);
         }
+    }
+
+    public String salvarFotoPerfil(MultipartFile arquivo) {
+        if (arquivo == null || arquivo.isEmpty()) {
+            throw new RegraNegocioException("Selecione uma foto de perfil.");
+        }
+        String extensao = obterExtensao(arquivo.getOriginalFilename());
+        if (!Set.of("jpg", "jpeg", "png", "gif", "webp").contains(extensao)) {
+            throw new RegraNegocioException("A foto deve estar no formato JPG, JPEG, PNG, GIF ou WEBP.");
+        }
+        if (arquivo.getSize() > LIMITE_FOTO_BYTES) {
+            throw new RegraNegocioException("A foto deve ter no máximo 5 MB.");
+        }
+        return salvar(arquivo);
     }
 
     public Resource carregar(String nome) {

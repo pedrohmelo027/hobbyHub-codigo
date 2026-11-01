@@ -1,0 +1,74 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                template="/WEB-INF/templates/base.xhtml">
+    <ui:param name="paginaAtiva" value="cadastrar" />
+    <f:metadata>
+        <f:viewAction action="#{cadastrarUsuarioBean.carregar}" />
+    </f:metadata>
+    <ui:define name="title">Criar conta · HobbyHub</ui:define>
+    <ui:define name="content">
+        <main class="auth-page">
+            <p class="eyebrow">HOBBYHUB</p>
+            <h1>Crie sua conta</h1>
+            <ui:include src="/WEB-INF/templates/mensagens.xhtml" />
+            <h:form id="cadastro" styleClass="card auth-form" enctype="multipart/form-data">
+                <section class="profile-photo-form" aria-labelledby="foto-titulo">
+                    <h2 id="foto-titulo">Foto de perfil</h2>
+                    <div class="profile-photo-current">
+                        <ui:include src="/WEB-INF/templates/avatar.xhtml">
+                            <ui:param name="classe" value="profile-avatar" />
+                        </ui:include>
+                        <span>Você pode adicionar ou trocar a foto depois, em Editar perfil.</span>
+                    </div>
+                    <h:outputLabel for="fotoPerfil" value="Escolha uma foto (opcional)" />
+                    <h:inputFile id="fotoPerfil" value="#{cadastrarUsuarioBean.fotoPerfil}"
+                                 pt:accept="image/jpeg,image/png,image/gif,image/webp" />
+                    <small>JPG, JPEG, PNG, GIF ou WEBP. Máximo 5 MB.</small>
+                </section>
+                <h:outputLabel for="nome" value="Nome *" />
+                <h:inputText id="nome" value="#{cadastrarUsuarioBean.form.nome}" required="true"
+                             requiredMessage="Informe seu nome." />
+                <h:outputLabel for="email" value="E-mail *" />
+                <h:inputText id="email" value="#{cadastrarUsuarioBean.form.email}" required="true"
+                             requiredMessage="Informe seu e-mail." pt:type="email" pt:autocomplete="email">
+                    <f:validateBean />
+                </h:inputText>
+                <h:outputLabel for="nomeUsuario" value="Nome de usuário *" />
+                <h:inputText id="nomeUsuario" value="#{cadastrarUsuarioBean.form.nomeUsuario}" required="true"
+                             requiredMessage="Informe um nome de usuário." pt:autocomplete="username" />
+                <h:outputLabel for="senha" value="Senha *" />
+                <h:inputSecret id="senha" value="#{cadastrarUsuarioBean.form.senha}" required="true"
+                               requiredMessage="Informe uma senha." pt:autocomplete="new-password" />
+                <h:outputLabel for="biografia" value="Biografia" />
+                <h:inputTextarea id="biografia" value="#{cadastrarUsuarioBean.form.biografia}" rows="3" />
+                <fieldset class="interest-fieldset">
+                    <legend>Tags de interesse</legend>
+                    <p id="interesses-ajuda">Escolha assuntos para acompanhar. Você pode alterar essa seleção depois.</p>
+                    <section class="interest-group interest-group-general" aria-labelledby="tags-gerais-titulo">
+                        <h2 id="tags-gerais-titulo">Tags gerais</h2>
+                        <h:selectManyCheckbox id="tagsGerais" value="#{cadastrarUsuarioBean.tagsGeraisSelecionadas}"
+                                              layout="page" styleClass="interest-options" pt:aria-describedby="interesses-ajuda">
+                            <f:selectItems value="#{cadastrarUsuarioBean.tagsGerais}" var="tag"
+                                           itemValue="#{tag.id}" itemLabel="#{tag.nome}" />
+                        </h:selectManyCheckbox>
+                    </section>
+                    <section class="interest-group interest-group-specific" aria-labelledby="tags-especificas-titulo">
+                        <h2 id="tags-especificas-titulo">Tags específicas</h2>
+                        <h:selectManyCheckbox id="tagsEspecificas" value="#{cadastrarUsuarioBean.tagsEspecificasSelecionadas}"
+                                              layout="page" styleClass="interest-options" pt:aria-describedby="interesses-ajuda">
+                            <f:selectItems value="#{cadastrarUsuarioBean.tagsEspecificas}" var="tag"
+                                           itemValue="#{tag.id}" itemLabel="#{tag.nome}" />
+                        </h:selectManyCheckbox>
+                    </section>
+                </fieldset>
+                <div class="auth-actions">
+                    <h:commandButton id="cadastrar" value="Criar conta" action="#{cadastrarUsuarioBean.cadastrar}" />
+                    <h:link value="Voltar ao login" outcome="/logar/login.xhtml" styleClass="button secondary" />
+                </div>
+            </h:form>
+        </main>
+    </ui:define>
+</ui:composition>

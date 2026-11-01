@@ -211,6 +211,29 @@ small { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; }
 .form-actions .secondary { display: inline-flex; }
 .login { max-width: 470px; margin-top: 55px; }
 .login button, .login input[type="submit"] { width: 100%; margin-top: 20px; }
+.auth-page { max-width: 620px; }
+.auth-form > input[type="submit"] { width: 100%; margin-top: 20px; }
+.auth-actions { display: grid; gap: 12px; margin-top: 22px; }
+.auth-actions input[type="submit"], .auth-actions .button { width: 100%; margin: 0; }
+.profile-photo-form { margin: 18px 0 22px; }
+.profile-photo-current { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.profile-photo-current .profile-avatar { width: 64px; height: 64px; }
+.profile-photo-form input[type="file"] { width: 100%; }
+.interest-fieldset { min-width: 0; margin: 24px 0 0; padding: 16px; border: 1px solid var(--line); border-radius: 6px; }
+.interest-fieldset legend { padding: 0 7px; font-weight: 800; }
+.interest-fieldset > p { margin: 0; color: var(--muted); font-size: 14px; }
+.interest-group { margin-top: 18px; }
+.interest-group h2 { margin: 0 0 10px; font-size: 14px; }
+table.interest-options { display: block; width: 100%; border-collapse: separate; }
+table.interest-options > tbody, table.interest-options > tbody > tr { display: flex; flex-wrap: wrap; gap: 9px; }
+table.interest-options > tbody > tr > td { display: block; padding: 0; border: 0; background: transparent; }
+.interest-options input[type="checkbox"] { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); }
+.interest-options label { display: inline-flex; align-items: center; min-height: 36px; margin: 0; padding: 7px 15px; border: 1px solid #F87171; border-radius: 20px; background: #fff; color: #F87171; font-weight: 700; cursor: pointer; }
+.interest-group-specific .interest-options label { border-color: #3B82F6; color: #3B82F6; }
+.interest-group-general .interest-options input[type="checkbox"]:checked + label { background: #F87171; color: #fff; }
+.interest-group-specific .interest-options input[type="checkbox"]:checked + label { background: #3B82F6; color: #fff; }
+.interest-options input[type="checkbox"]:focus-visible + label { outline: 3px solid var(--orange); outline-offset: 3px; }
+.interest-options label:hover { filter: brightness(.96); }
 .demo { margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 14px; }
 .demo p { color: var(--muted); }
 
