@@ -27,6 +27,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -172,6 +175,31 @@ class PostarIntegrationTest {
         mvc.perform(post("/api/logout").session(sessao).with(csrf()))
                 .andExpect(status().isNoContent());
         assertThat(sessao.isInvalid()).isTrue();
+    }
+
+    @Test
+    void loginAdministradorMantemPapelAdminNaSessao() throws Exception {
+        Usuario admin = usuarios.findByEmail("ana@teste.local").orElseThrow();
+        admin.setEmail("admin.teste@example.invalid");
+        admin.setSenha(new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder()
+                .encode("Ficticia-Admin-01-NaoReutilizar"));
+        admin.setRole(Role.ADMIN);
+        usuarios.save(admin);
+
+        var resultado = mvc.perform(post("/api/login").with(csrf())
+                        .param("email", "admin.teste@example.invalid")
+                        .param("password", "Ficticia-Admin-01-NaoReutilizar"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("admin.teste@example.invalid"))
+                .andReturn();
+        MockHttpSession sessao = (MockHttpSession) resultado.getRequest().getSession(false);
+        SecurityContext contexto = (SecurityContext) sessao.getAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+
+        assertThat(contexto.getAuthentication().getName()).isEqualTo("admin.teste@example.invalid");
+        assertThat(contexto.getAuthentication().getAuthorities())
+                .extracting(autoridade -> autoridade.getAuthority())
+                .contains("ROLE_ADMIN");
     }
 
     @Test
