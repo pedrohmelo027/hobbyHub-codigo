@@ -1,0 +1,68 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                template="/WEB-INF/templates/base.xhtml">
+    <ui:param name="paginaAtiva" value="perfil" />
+    <f:metadata>
+        <f:viewAction action="#{editarPerfilBean.carregar}" />
+    </f:metadata>
+    <ui:define name="title">Meu perfil · HobbyHub</ui:define>
+    <ui:define name="content">
+        <main class="auth-page">
+            <p class="eyebrow">MEU HOBBYHUB</p>
+            <h1>Editar perfil</h1>
+            <ui:include src="/WEB-INF/templates/mensagens.xhtml" />
+            <h:form id="perfil" styleClass="card auth-form" enctype="multipart/form-data">
+                <section class="profile-photo-form" aria-labelledby="foto-titulo">
+                    <h2 id="foto-titulo">Foto de perfil</h2>
+                    <div class="profile-photo-current">
+                        <ui:include src="/WEB-INF/templates/avatar.xhtml">
+                            <ui:param name="classe" value="profile-avatar" />
+                            <ui:param name="foto" value="#{editarPerfilBean.perfil.urlFotoPerfil}" />
+                        </ui:include>
+                        <span>Essa foto aparece no seu perfil e nas suas publicações.</span>
+                    </div>
+                    <h:outputLabel for="arquivoFoto" value="Escolha uma foto" />
+                    <h:inputFile id="arquivoFoto" value="#{editarPerfilBean.fotoPerfil}"
+                                 pt:accept="image/jpeg,image/png,image/gif,image/webp" />
+                    <small>JPG, JPEG, PNG, GIF ou WEBP. Máximo 5 MB.</small>
+                </section>
+                <h:outputLabel for="nome" value="Nome *" />
+                <h:inputText id="nome" value="#{editarPerfilBean.perfil.nome}" required="true"
+                             requiredMessage="Informe seu nome." />
+                <h:outputLabel for="email" value="E-mail" />
+                <h:inputText id="email" value="#{editarPerfilBean.perfil.email}" readonly="true" />
+                <h:outputLabel for="nomeUsuario" value="Nome de usuário" />
+                <h:inputText id="nomeUsuario" value="#{editarPerfilBean.perfil.nomeUsuario}" readonly="true" />
+                <h:outputLabel for="biografia" value="Biografia" />
+                <h:inputTextarea id="biografia" value="#{editarPerfilBean.perfil.biografia}" rows="4" />
+                <fieldset class="interest-fieldset">
+                    <legend>Tags de interesse</legend>
+                    <p id="interesses-ajuda">Escolha assuntos para seus atalhos no feed. Deixe sem seleção para limpar.</p>
+                    <section class="interest-group interest-group-general" aria-labelledby="tags-gerais-titulo">
+                        <h2 id="tags-gerais-titulo">Tags gerais</h2>
+                        <h:selectManyCheckbox id="tagsGerais" value="#{editarPerfilBean.tagsGeraisSelecionadas}"
+                                              layout="page" styleClass="interest-options" pt:aria-describedby="interesses-ajuda">
+                            <f:selectItems value="#{editarPerfilBean.tagsGerais}" var="tag"
+                                           itemValue="#{tag.id}" itemLabel="#{tag.nome}" />
+                        </h:selectManyCheckbox>
+                    </section>
+                    <section class="interest-group interest-group-specific" aria-labelledby="tags-especificas-titulo">
+                        <h2 id="tags-especificas-titulo">Tags específicas</h2>
+                        <h:selectManyCheckbox id="tagsEspecificas" value="#{editarPerfilBean.tagsEspecificasSelecionadas}"
+                                              layout="page" styleClass="interest-options" pt:aria-describedby="interesses-ajuda">
+                            <f:selectItems value="#{editarPerfilBean.tagsEspecificas}" var="tag"
+                                           itemValue="#{tag.id}" itemLabel="#{tag.nome}" />
+                        </h:selectManyCheckbox>
+                    </section>
+                </fieldset>
+                <div class="auth-actions">
+                    <h:commandButton id="salvar" value="Salvar perfil" action="#{editarPerfilBean.salvar}" />
+                    <h:link value="Cancelar" outcome="/visualizar-posts/feed.xhtml" styleClass="button secondary" />
+                </div>
+            </h:form>
+        </main>
+    </ui:define>
+</ui:composition>

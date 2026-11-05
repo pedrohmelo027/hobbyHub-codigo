@@ -23,7 +23,8 @@ public class AcessoFilter implements Filter {
         HttpServletResponse resposta = (HttpServletResponse) response;
         String caminho = requisicao.getServletPath();
         if ((caminho.startsWith("/visualizar-posts/") || caminho.startsWith("/postar/")
-                || caminho.startsWith("/midias/")) && !api.isAutenticado()) {
+                || caminho.startsWith("/midias/") || caminho.startsWith("/editar-perfil/"))
+                && !api.isAutenticado()) {
             if (caminho.startsWith("/midias/")) resposta.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             else resposta.sendRedirect(requisicao.getContextPath() + "/logar/login.xhtml");
             return;

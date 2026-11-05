@@ -1,6 +1,7 @@
 package br.com.hobbyhub.jsf.utils;
 
 import br.com.hobbyhub.jsf.dto.CadastrarUsuarioFormDTO;
+import br.com.hobbyhub.jsf.dto.EditarPerfilFormDTO;
 import br.com.hobbyhub.jsf.dto.PostEdicaoFormDTO;
 import br.com.hobbyhub.jsf.dto.PostFormDTO;
 import br.com.hobbyhub.jsf.dto.PostViewDTO;
@@ -93,6 +94,41 @@ public class HobbyHubApiClient implements Serializable {
         List<TagViewDTO> tags = new ArrayList<>(listarTags("GERAL"));
         tags.addAll(listarTags("ESPECIFICA"));
         return tags;
+    }
+
+    public EditarPerfilFormDTO carregarPerfil() {
+        return ler(enviar(requisicao("api/perfil").GET()), EditarPerfilFormDTO.class);
+    }
+
+    public void editarPerfil(EditarPerfilFormDTO form) {
+        try {
+            String token = csrf();
+            enviar(requisicao("api/perfil")
+                    .header("X-CSRF-TOKEN", token)
+                    .header("Content-Type", "application/json")
+                    .method("PATCH", HttpRequest.BodyPublishers.ofByteArray(JSON.writeValueAsBytes(form))));
+        } catch (IOException erro) {
+            throw new ApiException("Não foi possível preparar a atualização do perfil.", erro);
+        }
+    }
+
+    public void atualizarFotoPerfil(Part arquivo) {
+        if (arquivo == null || arquivo.getSize() == 0) {
+            throw new ApiException("Selecione uma foto de perfil.");
+        }
+        if (arquivo.getSize() > 5L * 1024 * 1024) {
+            throw new ApiException("A foto deve ter no máximo 5 MB.");
+        }
+        try {
+            String token = csrf();
+            String boundary = "HobbyHub" + UUID.randomUUID().toString().replace("-", "");
+            enviar(requisicao("api/perfil/foto")
+                    .header("X-CSRF-TOKEN", token)
+                    .header("Content-Type", "multipart/form-data; boundary=" + boundary)
+                    .POST(HttpRequest.BodyPublishers.ofByteArray(multipartFoto(arquivo, boundary))));
+        } catch (IOException erro) {
+            throw new ApiException("Não foi possível ler a foto selecionada.", erro);
+        }
     }
 
     public void cadastrarUsuario(CadastrarUsuarioFormDTO form, Part foto) {
@@ -236,6 +272,18 @@ public class HobbyHubApiClient implements Serializable {
         String nome = arquivo.getSubmittedFileName().replaceAll("[^a-zA-Z0-9._-]", "_");
         texto(corpo, "--" + boundary + "\r\nContent-Disposition: form-data; name=\"arquivo\"; filename=\"" + nome
                 + "\"\r\nContent-Type: application/octet-stream\r\n\r\n");
+        try (var entrada = arquivo.getInputStream()) {
+            entrada.transferTo(corpo);
+        }
+        texto(corpo, "\r\n--" + boundary + "--\r\n");
+        return corpo.toByteArray();
+    }
+
+    private byte[] multipartFoto(Part arquivo, String boundary) throws IOException {
+        ByteArrayOutputStream corpo = new ByteArrayOutputStream();
+        String nome = arquivo.getSubmittedFileName().replaceAll("[^a-zA-Z0-9._-]", "_");
+        texto(corpo, "--" + boundary + "\r\nContent-Disposition: form-data; name=\"foto\"; filename=\""
+                + nome + "\"\r\nContent-Type: application/octet-stream\r\n\r\n");
         try (var entrada = arquivo.getInputStream()) {
             entrada.transferTo(corpo);
         }
