@@ -5,6 +5,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -116,6 +117,59 @@ class PostarIntegrationTest {
         assertThat(post.getDataCriacao()).isNotNull();
         mvc.perform(get("/api/posts").with(user("ana@teste.local")))
                 .andExpect(jsonPath("$[0].conteudo").value("Meu primeiro treino!"));
+    }
+
+    @Test
+    void editaNomeBiografiaEInteressesDoProprioPerfil() throws Exception {
+        mvc.perform(patch("/api/perfil").with(user("ana@teste.local")).with(csrf())
+                        .contentType("application/json")
+                        .content("""
+                                {"nome":" Ana Atualizada ","biografia":" Minha bio ","tagsInteresseIds":[%d]}
+                                """.formatted(especifica)))
+                .andExpect(status().isOk());
+
+        mvc.perform(get("/api/perfil").with(user("ana@teste.local")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nome").value("Ana Atualizada"))
+                .andExpect(jsonPath("$.biografia").value("Minha bio"))
+                .andExpect(jsonPath("$.tagsInteresseIds[0]").value(especifica));
+    }
+
+    @Test
+    void edicaoDePerfilSemAutenticacaoNaoAlteraDados() throws Exception {
+        mvc.perform(patch("/api/perfil").with(csrf())
+                        .contentType("application/json")
+                        .content("""
+                                {"nome":"Invasor","biografia":"Alteração indevida"}
+                                """))
+                .andExpect(status().isUnauthorized());
+
+        assertThat(usuarios.findByEmail("ana@teste.local").orElseThrow().getNome()).isEqualTo("Ana");
+    }
+
+    @Test
+    void edicaoRejeitaTagInexistenteSemAlterarPerfil() throws Exception {
+        mvc.perform(patch("/api/perfil").with(user("ana@teste.local")).with(csrf())
+                        .contentType("application/json")
+                        .content("""
+                                {"nome":"Invasor","biografia":"Bio","tagsInteresseIds":[999999]}
+                                """))
+                .andExpect(status().isBadRequest());
+
+        assertThat(usuarios.findByEmail("ana@teste.local").orElseThrow().getNome()).isEqualTo("Ana");
+    }
+
+    @Test
+    void atualizaFotoDoProprioPerfil() throws Exception {
+        MockMultipartFile foto = new MockMultipartFile(
+                "foto", "perfil.png", "image/png",
+                new byte[] {(byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A});
+
+        mvc.perform(multipart("/api/perfil/foto").file(foto)
+                        .with(user("ana@teste.local")).with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.urlFotoPerfil").value(org.hamcrest.Matchers.matchesPattern(
+                        "/midias/[a-f0-9-]{36}\\.png")));
     }
 
     @Test
