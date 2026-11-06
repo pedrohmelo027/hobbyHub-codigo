@@ -45,9 +45,20 @@
                         <div class="post-header">
                             <ui:include src="/WEB-INF/templates/avatar.xhtml">
                                 <ui:param name="classe" value="" />
+                                <ui:param name="foto" value="#{post.urlFotoPerfil}" />
                             </ui:include>
-                            <strong class="post-author"><h:outputText value="#{post.autor}" /></strong>
-                            <div class="tags"><ui:repeat value="#{post.tags}" var="tag"><span><h:outputText value="#{tag}" /></span></ui:repeat></div>
+                            <strong class="post-author">
+                                <h:link value="#{post.autor}" outcome="/visualizar-perfil/perfil.xhtml">
+                                    <f:param name="nomeUsuario" value="#{post.autor}" />
+                                </h:link>
+                            </strong>
+                            <div class="tags">
+                                <ui:repeat value="#{post.tags}" var="tag" varStatus="tagStatus">
+                                    <span class="#{tagStatus.index eq 0 ? 'tag-general' : 'tag-specific'}">
+                                        <h:outputText value="#{tag}" />
+                                    </span>
+                                </ui:repeat>
+                            </div>
                         </div>
                         <ui:fragment rendered="#{not empty post.urlImagem and not post.video}">
                             <img class="post-image" src="#{request.contextPath}#{post.urlImagem}" alt="Imagem compartilhada pelo autor" loading="lazy" />

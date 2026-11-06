@@ -148,6 +148,8 @@ main > p { color: var(--muted); }
 .avatar-small { width: 44px; height: 44px; }
 .avatar-small::before { top: 7px; left: 13px; }
 .avatar-small::after { left: 8px; width: 24px; }
+.avatar-photo::before, .avatar-photo::after { display: none; }
+.avatar-photo img { display: block; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 .post-author { font-size: 15px; }
 .tags { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-left: auto; }
 .tags span {
@@ -172,6 +174,45 @@ main > p { color: var(--muted); }
 }
 .content { margin: 10px auto 0; max-width: 440px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; line-height: 1.32; }
 .post-date { display: block; margin-top: 2px; text-align: right; font-size: 11px; font-weight: 800; }
+.tags .tag-general { background: #F87171; }
+.tags .tag-specific { background: #3B82F6; }
+.profile-page { max-width: 1120px; }
+.profile-layout {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 600px);
+    align-items: start;
+    justify-content: center;
+    gap: 44px;
+    margin: 30px auto 0;
+}
+.profile-sidebar { min-height: 460px; padding: 22px 24px 26px 0; border-right: 1px solid var(--line); }
+.profile-avatar-wrap { position: relative; width: 112px; height: 112px; margin: 0 auto 18px; }
+.profile-avatar-wrap .profile-avatar { width: 104px; height: 104px; border: 4px solid #fff; box-shadow: 0 0 0 3px #F87171; }
+.profile-avatar-wrap .profile-avatar::before { top: 17px; left: 32px; width: 31px; height: 31px; }
+.profile-avatar-wrap .profile-avatar::after { left: 17px; bottom: 9px; width: 61px; height: 31px; }
+.streak-badge {
+    position: absolute;
+    right: -9px;
+    bottom: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 48px;
+    padding: 4px 8px;
+    border: 2px solid var(--ink);
+    border-radius: 18px;
+    background: #fff;
+    color: var(--ink);
+    font-size: 14px;
+}
+.streak-badge span { font-size: 18px; line-height: 1; }
+.streak-badge strong { font-size: 13px; }
+.profile-sidebar h1 { margin: 0; font-size: 22px; line-height: 1.2; }
+.profile-handle { margin: 5px 0 16px; color: #3B82F6; font-weight: 800; }
+.profile-bio { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.profile-edit { margin-top: 22px; }
+.profile-posts > h2 { margin: 4px 0 18px; font-size: 20px; }
+.profile-posts .empty { margin-top: 0; }
 .post-actions { display: flex; gap: 9px; margin: 12px 0 0; }
 .post-actions input[type="submit"] { min-height: 34px; padding: 6px 11px; font-size: 12px; }
 .secondary { background: #fff; color: var(--ink); border: 1px solid #d5d5d5; }
@@ -244,6 +285,9 @@ table.interest-options > tbody > tr > td { display: block; padding: 0; border: 0
     .nav-actions { gap: 15px; }
     .nav-link { font-size: 14px; }
     .nav-logout { min-height: 32px; padding: 5px 9px; }
+    .profile-layout { grid-template-columns: 1fr; gap: 24px; }
+    .profile-sidebar { min-height: 0; padding: 4px 0 22px; border-right: 0; border-bottom: 1px solid var(--line); }
+    .profile-avatar-wrap { margin-left: 0; }
 }
 @media (max-width: 520px) {
     main { margin-top: 26px; padding-right: 14px; padding-left: 14px; }

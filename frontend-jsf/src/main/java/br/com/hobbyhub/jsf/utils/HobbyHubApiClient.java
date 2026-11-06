@@ -6,6 +6,7 @@ import br.com.hobbyhub.jsf.dto.PostEdicaoFormDTO;
 import br.com.hobbyhub.jsf.dto.PostFormDTO;
 import br.com.hobbyhub.jsf.dto.PostViewDTO;
 import br.com.hobbyhub.jsf.dto.TagViewDTO;
+import br.com.hobbyhub.jsf.dto.VisualizarPerfilDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.enterprise.context.SessionScoped;
 import javax.servlet.http.Part;
@@ -98,6 +99,10 @@ public class HobbyHubApiClient implements Serializable {
 
     public EditarPerfilFormDTO carregarPerfil() {
         return ler(enviar(requisicao("api/perfil").GET()), EditarPerfilFormDTO.class);
+    }
+
+    public VisualizarPerfilDTO visualizarPerfil(String nomeUsuario) {
+        return ler(enviar(requisicao("api/perfis/" + codificar(nomeUsuario)).GET()), VisualizarPerfilDTO.class);
     }
 
     public void editarPerfil(EditarPerfilFormDTO form) {

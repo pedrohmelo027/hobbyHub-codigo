@@ -13,6 +13,7 @@ public record PostViewDTO(
         LocalDateTime dataCriacao,
         String urlImagem,
         String autor,
+        String urlFotoPerfil,
         List<String> tags,
         boolean proprio) {
 
@@ -29,6 +30,7 @@ public record PostViewDTO(
                 post.getDataCriacao(),
                 post.getUrlImagem(),
                 post.getUsuario().getNomeUsuario(),
+                post.getUsuario().getUrlFotoPerfil(),
                 nomesTags,
                 post.getUsuario().getEmail().equalsIgnoreCase(email));
     }
