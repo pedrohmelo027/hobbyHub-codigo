@@ -10,4 +10,7 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, Long> {
     @EntityGraph(attributePaths = {"usuario", "tags"})
     List<Post> findAllByOrderByDataCriacaoDescIdDesc();
+
+    @EntityGraph(attributePaths = {"usuario", "tags"})
+    List<Post> findByUsuario_NomeUsuarioIgnoreCaseOrderByDataCriacaoDescIdDesc(String nomeUsuario);
 }

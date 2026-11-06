@@ -18,6 +18,7 @@ public class PostViewDTO implements Serializable {
     private LocalDateTime dataCriacao;
     private String urlImagem;
     private String autor;
+    private String urlFotoPerfil;
     private List<String> tags;
     private boolean video;
     private boolean proprio;

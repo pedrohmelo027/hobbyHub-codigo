@@ -1,4 +1,9 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
-    <span class="avatar #{classe}" aria-hidden="true"><span></span></span>
+    <ui:fragment rendered="#{not empty foto}">
+        <span class="avatar avatar-photo #{classe}"><img src="#{request.contextPath}#{foto}" alt="Foto de perfil" /></span>
+    </ui:fragment>
+    <ui:fragment rendered="#{empty foto}">
+        <span class="avatar #{classe}" aria-hidden="true"><span></span></span>
+    </ui:fragment>
 </ui:composition>
