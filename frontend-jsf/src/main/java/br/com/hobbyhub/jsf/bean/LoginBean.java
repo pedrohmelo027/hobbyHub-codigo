@@ -26,6 +26,10 @@ public class LoginBean {
     @Setter
     private String senha;
 
+    public boolean isAdministrador() {
+        return api.isAdministrador();
+    }
+
     public String entrar() {
         try {
             api.entrar(email, senha);

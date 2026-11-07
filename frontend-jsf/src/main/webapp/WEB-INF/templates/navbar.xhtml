@@ -14,6 +14,8 @@
                         styleClass="#{paginaAtiva eq 'perfil' ? 'nav-link active' : 'nav-link'}" />
                 <h:link value="Postar" outcome="/postar/postar.xhtml"
                         styleClass="#{paginaAtiva eq 'postar' ? 'nav-link active' : 'nav-link'}" />
+                <h:link rendered="#{loginBean.administrador}" value="Tags" outcome="/manter-tags/manter-tags.xhtml"
+                        styleClass="#{paginaAtiva eq 'manter-tags' ? 'nav-link active' : 'nav-link'}" />
                 <h:form id="sessao"><h:commandButton value="Sair" action="#{loginBean.sair}" styleClass="nav-logout" /></h:form>
             </div>
         </nav>

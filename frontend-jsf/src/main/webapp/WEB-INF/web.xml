@@ -55,6 +55,10 @@
     </filter-mapping>
     <filter-mapping>
         <filter-name>AcessoFilter</filter-name>
+        <url-pattern>/manter-tags/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>AcessoFilter</filter-name>
         <url-pattern>/midias/*</url-pattern>
     </filter-mapping>
     <session-config>

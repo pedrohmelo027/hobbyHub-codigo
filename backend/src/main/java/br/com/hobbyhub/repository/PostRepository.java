@@ -13,4 +13,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @EntityGraph(attributePaths = {"usuario", "tags"})
     List<Post> findByUsuario_NomeUsuarioIgnoreCaseOrderByDataCriacaoDescIdDesc(String nomeUsuario);
+
+    boolean existsByTags_Id(Long tagId);
 }
