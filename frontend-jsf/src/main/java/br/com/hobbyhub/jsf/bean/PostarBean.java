@@ -28,6 +28,7 @@ public class PostarBean implements Serializable {
     private List<TagViewDTO> tagsGerais = List.of();
     private List<TagViewDTO> tagsEspecificas = List.of();
     private boolean editorAberto;
+    private String urlFotoPerfil;
 
     @Getter
     @Setter
@@ -37,6 +38,7 @@ public class PostarBean implements Serializable {
         try {
             tagsGerais = api.listarTags("GERAL");
             tagsEspecificas = api.listarTags("ESPECIFICA");
+            urlFotoPerfil = api.carregarPerfil().getUrlFotoPerfil();
         } catch (ApiException erro) {
             mensagem(FacesMessage.SEVERITY_ERROR, erro.getMessage());
         }
