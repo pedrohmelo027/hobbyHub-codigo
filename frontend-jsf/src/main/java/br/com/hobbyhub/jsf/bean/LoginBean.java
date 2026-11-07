@@ -26,6 +26,10 @@ public class LoginBean {
     @Setter
     private String senha;
 
+    public boolean isAutenticado() {
+        return api.isAutenticado();
+    }
+
     public boolean isAdministrador() {
         return api.isAdministrador();
     }
