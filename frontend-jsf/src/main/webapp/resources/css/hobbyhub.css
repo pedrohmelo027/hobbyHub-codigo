@@ -57,6 +57,31 @@ a { color: inherit; }
     box-shadow: 0 2px 5px #00000025;
     font-size: 14px;
 }
+.nav-search input {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--ink);
+    box-shadow: none;
+}
+.nav-search input::placeholder { color: #999; }
+.search-submit {
+    flex: none;
+    width: 32px;
+    min-height: 32px;
+    padding: 0;
+    background: transparent;
+    color: #999;
+}
+.search-submit:hover { background: transparent; filter: none; }
+.nav-search:focus-within { outline: 3px solid #3B82F6; outline-offset: 2px; }
+.nav-search input:focus-visible { outline: 0; }
 .search-icon {
     margin-left: auto;
     width: 16px;
@@ -275,13 +300,22 @@ table.interest-options > tbody > tr > td { display: block; padding: 0; border: 0
 .interest-group-specific .interest-options input[type="checkbox"]:checked + label { background: #3B82F6; color: #fff; }
 .interest-options input[type="checkbox"]:focus-visible + label { outline: 3px solid var(--orange); outline-offset: 3px; }
 .interest-options label:hover { filter: brightness(.96); }
+.interest-shortcuts { margin: 0 0 20px; }
+.interest-shortcuts h2 { margin: 0 0 9px; font-size: 15px; }
+.interest-shortcuts p { margin: 8px 0 0; color: var(--muted); font-size: 14px; }
+.interest-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.interest-chip { display: inline-flex; align-items: center; min-height: 36px; padding: 7px 14px; border: 1px solid #F87171; border-radius: 20px; background: #fff; color: #F87171; font-weight: 800; text-decoration: none; }
+.interest-chip.interest-specific { border-color: #3B82F6; color: #3B82F6; }
+.interest-chip.interest-general:hover, .interest-chip.interest-general.active { background: #F87171; color: #fff; }
+.interest-chip.interest-specific:hover, .interest-chip.interest-specific.active { background: #3B82F6; color: #fff; }
+.active-interest a { margin-left: 10px; color: #F87171; font-weight: 800; }
 .demo { margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 14px; }
 .demo p { color: var(--muted); }
 
 @media (max-width: 760px) {
     .site-nav { grid-template-columns: 1fr auto; gap: 10px 16px; padding: 11px 16px; }
     .brand-logo { width:166px; height:42px; }
-    .nav-search { grid-row: 2; grid-column: 1 / -1; order: 3; }
+    .nav-search { grid-row: 2; grid-column: 1 / -1; order: 3; width: 100%; }
     .nav-actions { gap: 15px; }
     .nav-link { font-size: 14px; }
     .nav-logout { min-height: 32px; padding: 5px 9px; }

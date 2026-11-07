@@ -15,4 +15,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByUsuario_NomeUsuarioIgnoreCaseOrderByDataCriacaoDescIdDesc(String nomeUsuario);
 
     boolean existsByTags_Id(Long tagId);
+
+    @EntityGraph(attributePaths = {"usuario", "tags"})
+    List<Post> findDistinctByTags_IdOrderByDataCriacaoDescIdDesc(Long tagId);
 }
