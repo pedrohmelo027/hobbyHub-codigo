@@ -2,7 +2,7 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
     <header class="site-header">
-        <nav class="site-nav" aria-label="Navegação principal">
+        <nav class="site-nav #{paginaAtiva eq 'feed' ? 'site-nav-with-search' : 'site-nav-without-search'}" aria-label="Navegação principal">
             <ui:include src="/WEB-INF/templates/marca.xhtml">
                 <ui:param name="destino" value="/visualizar-posts/feed.xhtml" />
             </ui:include>
@@ -16,17 +16,19 @@
                 </form>
             </ui:fragment>
             <div class="nav-actions">
-                <h:link value="Home" outcome="/visualizar-posts/feed.xhtml"
+                <h:link rendered="#{loginBean.autenticado}" value="Home" outcome="/visualizar-posts/feed.xhtml"
                         styleClass="#{paginaAtiva eq 'feed' ? 'nav-link active' : 'nav-link'}" />
-                <h:link value="Perfil" outcome="/visualizar-perfil/perfil.xhtml"
+                <h:link rendered="#{loginBean.autenticado}" value="Perfil" outcome="/visualizar-perfil/perfil.xhtml"
                         styleClass="#{paginaAtiva eq 'perfil' ? 'nav-link active' : 'nav-link'}" />
-                <h:link value="Postar" outcome="/postar/postar.xhtml"
+                <h:link rendered="#{loginBean.autenticado}" value="Postar" outcome="/postar/postar.xhtml"
                         styleClass="#{paginaAtiva eq 'postar' ? 'nav-link active' : 'nav-link'}" />
                 <h:link rendered="#{loginBean.administrador}" value="Tags" outcome="/manter-tags/manter-tags.xhtml"
                         styleClass="#{paginaAtiva eq 'manter-tags' ? 'nav-link active' : 'nav-link'}" />
                 <h:link rendered="#{loginBean.administrador}" value="Moderação" outcome="/manter-posts/manter-posts.xhtml"
                         styleClass="#{paginaAtiva eq 'manter-posts' ? 'nav-link active' : 'nav-link'}" />
-                <h:form id="sessao"><h:commandButton value="Sair" action="#{loginBean.sair}" styleClass="nav-logout" /></h:form>
+                <h:form id="sessao" rendered="#{loginBean.autenticado}">
+                    <h:commandButton value="Sair" action="#{loginBean.sair}" styleClass="nav-logout" />
+                </h:form>
             </div>
         </nav>
     </header>
