@@ -128,7 +128,12 @@ public class HobbyHubApiClient implements Serializable {
     }
 
     public List<PostViewDTO> listarPosts() {
-        return Arrays.asList(ler(enviar(requisicao("api/posts").GET()), PostViewDTO[].class));
+        return listarPosts(null);
+    }
+
+    public List<PostViewDTO> listarPosts(Long tagId) {
+        String caminho = tagId == null ? "api/posts" : "api/posts?tagId=" + tagId;
+        return Arrays.asList(ler(enviar(requisicao(caminho).GET()), PostViewDTO[].class));
     }
 
     public List<TagViewDTO> listarTags(String tipo) {

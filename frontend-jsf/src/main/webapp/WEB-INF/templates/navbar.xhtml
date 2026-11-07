@@ -6,7 +6,15 @@
             <ui:include src="/WEB-INF/templates/marca.xhtml">
                 <ui:param name="destino" value="/visualizar-posts/feed.xhtml" />
             </ui:include>
-            <div class="nav-search" aria-label="Pesquisa de tags"><span>Pesquisar tags</span><span class="search-icon" aria-hidden="true"></span></div>
+            <ui:fragment rendered="#{paginaAtiva eq 'feed'}">
+                <form class="nav-search" action="#{request.contextPath}/visualizar-posts/feed.xhtml" method="get" role="search">
+                    <input type="search" name="tag" value="#{param.tag}" placeholder="Pesquisar tags"
+                           aria-label="Pesquisar tags" />
+                    <button class="search-submit" type="submit" aria-label="Pesquisar">
+                        <span class="search-icon" aria-hidden="true"></span>
+                    </button>
+                </form>
+            </ui:fragment>
             <div class="nav-actions">
                 <h:link value="Home" outcome="/visualizar-posts/feed.xhtml"
                         styleClass="#{paginaAtiva eq 'feed' ? 'nav-link active' : 'nav-link'}" />
