@@ -307,3 +307,36 @@ table.interest-options > tbody > tr > td { display: block; padding: 0; border: 0
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+.tag-admin-form { display: grid; gap: 12px; margin: 22px 0 24px; }
+.tag-admin-form h2 { margin: 0 0 4px; }
+.tag-admin-form label { margin-top: 4px; font-weight: 700; }
+.tag-form-actions, .tag-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.tag-form-actions { margin-top: 8px; }
+.tag-form-actions input[type="submit"], .tag-actions input[type="submit"] { margin: 0; }
+.tag-form-actions .tag-save { background: #3B82F6; }
+.tag-form-actions .tag-clear { background: #F87171; }
+.admin-tag-list { display: grid; gap: 12px; }
+.tag-group { padding: 16px; border-radius: var(--radius); background: var(--card); }
+.tag-group-summary, .tag-summary-name { display: flex; align-items: center; gap: 10px; }
+.tag-group-summary { justify-content: space-between; cursor: pointer; }
+.tag-group-summary::-webkit-details-marker { display: none; }
+.tag-group-summary::before { content: "▸"; color: var(--ink); }
+.tag-group[open] .tag-group-summary::before { content: "▾"; }
+.tag-summary-name { flex-wrap: wrap; }
+.tag-type { padding: 4px 11px; border-radius: 18px; color: #fff; font-size: 12px; font-weight: 800; }
+.tag-type-general { background: #F87171; }
+.tag-type-specific { background: #3B82F6; }
+.tag-summary-count, .tag-empty { color: var(--muted); font-size: 13px; }
+.tag-actions { margin: 14px 0; }
+.tag-actions .secondary { background: #fff; color: #3B82F6; border: 1px solid #3B82F6; }
+.tag-actions .danger { background: #fff; color: #ad3345; border: 1px solid #F87171; }
+.tag-specific-list { display: grid; gap: 10px; margin-top: 12px; }
+.tag-specific-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px; border-radius: var(--radius); background: #fff; }
+.tag-specific-row .tag-actions { margin: 0; }
+.tag-empty { margin: 12px 0 0; }
+
+@media (max-width: 520px) {
+    .tag-group-summary, .tag-specific-row { align-items: flex-start; flex-direction: column; }
+    .tag-summary-count { margin-left: 28px; }
+}

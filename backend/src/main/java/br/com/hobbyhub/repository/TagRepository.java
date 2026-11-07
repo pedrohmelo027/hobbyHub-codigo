@@ -15,4 +15,6 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
     List<Tag> findByTipoOrderByNomeAsc(TipoDeTag tipo);
 
     Optional<Tag> findByNomeAndTipo(String nome, TipoDeTag tipo);
+
+    boolean existsByTagGeral_Id(Long tagGeralId);
 }

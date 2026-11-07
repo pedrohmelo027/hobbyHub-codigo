@@ -49,7 +49,7 @@ public class SecurityConfig {
                         .loginProcessingUrl("/api/login")
                         .usernameParameter("email")
                         .successHandler((request, response, authentication) ->
-                                responder(json, response, 200, "email", authentication.getName()))
+                                responderLogin(json, response, authentication))
                         .failureHandler((request, response, exception) ->
                                 responder(json, response, 401, "erro", "E-mail ou senha inválidos.")))
                 .httpBasic(Customizer.withDefaults())
@@ -71,5 +71,17 @@ public class SecurityConfig {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         json.writeValue(response.getWriter(), Map.of(chave, valor));
+    }
+
+    private void responderLogin(ObjectMapper json, HttpServletResponse response,
+            org.springframework.security.core.Authentication authentication) throws IOException {
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        boolean administrador = authentication.getAuthorities().stream()
+                .anyMatch(authority -> "ROLE_ADMIN".equals(authority.getAuthority()));
+        json.writeValue(response.getWriter(), Map.of(
+                "email", authentication.getName(),
+                "administrador", administrador));
     }
 }

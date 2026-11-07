@@ -2,6 +2,8 @@ package br.com.hobbyhub.jsf.utils;
 
 import br.com.hobbyhub.jsf.dto.CadastrarUsuarioFormDTO;
 import br.com.hobbyhub.jsf.dto.EditarPerfilFormDTO;
+import br.com.hobbyhub.jsf.dto.ManterTagDTO;
+import br.com.hobbyhub.jsf.dto.ManterTagFormDTO;
 import br.com.hobbyhub.jsf.dto.PostEdicaoFormDTO;
 import br.com.hobbyhub.jsf.dto.PostFormDTO;
 import br.com.hobbyhub.jsf.dto.PostViewDTO;
@@ -44,6 +46,7 @@ public class HobbyHubApiClient implements Serializable {
     // Cada sessão JSF mantém seus próprios cookies e a própria autenticação na API.
     private final Map<String, String> cookies = new ConcurrentHashMap<>();
     private boolean autenticado;
+    private boolean administrador;
 
     public HobbyHubApiClient() {
         this(System.getProperty("hobbyhub.api.url",
@@ -58,15 +61,26 @@ public class HobbyHubApiClient implements Serializable {
         return autenticado;
     }
 
+    public boolean isAdministrador() {
+        return administrador;
+    }
+
     public void entrar(String email, String senha) {
         cookies.clear();
         autenticado = false;
+        administrador = false;
         String corpo = "email=" + codificar(email) + "&password=" + codificar(senha);
         String token = csrf();
-        enviar(requisicao("api/login")
+        HttpResponse<byte[]> response = enviar(requisicao("api/login")
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .header("X-CSRF-TOKEN", token)
                 .POST(HttpRequest.BodyPublishers.ofString(corpo)));
+        try {
+            administrador = JSON.readTree(response.body()).path("administrador").asBoolean();
+        } catch (IOException erro) {
+            cookies.clear();
+            throw new ApiException("A API retornou dados de autenticação inválidos.", erro);
+        }
         autenticado = true;
     }
 
@@ -79,7 +93,37 @@ public class HobbyHubApiClient implements Serializable {
             }
         } finally {
             autenticado = false;
+            administrador = false;
             cookies.clear();
+        }
+    }
+
+    public List<ManterTagDTO> listarTagsGerenciadas() {
+        return Arrays.asList(ler(enviar(requisicao("api/tags/gerenciadas").GET()), ManterTagDTO[].class));
+    }
+
+    public void criarTag(ManterTagFormDTO form) {
+        enviarJsonComCsrf("api/tags/gerenciadas", "POST", form);
+    }
+
+    public void editarTag(ManterTagFormDTO form) {
+        enviarJsonComCsrf("api/tags/gerenciadas/" + form.getId(), "PUT", form);
+    }
+
+    public void excluirTag(Long id) {
+        String token = csrf();
+        enviar(requisicao("api/tags/gerenciadas/" + id).header("X-CSRF-TOKEN", token).DELETE());
+    }
+
+    private void enviarJsonComCsrf(String caminho, String metodo, Object corpo) {
+        try {
+            String token = csrf();
+            enviar(requisicao(caminho)
+                    .header("X-CSRF-TOKEN", token)
+                    .header("Content-Type", "application/json")
+                    .method(metodo, HttpRequest.BodyPublishers.ofByteArray(JSON.writeValueAsBytes(corpo))));
+        } catch (IOException erro) {
+            throw new ApiException("Não foi possível preparar a alteração das tags.", erro);
         }
     }
 
@@ -229,7 +273,10 @@ public class HobbyHubApiClient implements Serializable {
             HttpResponse<byte[]> response = HTTP.send(request.build(), HttpResponse.BodyHandlers.ofByteArray());
             atualizarCookies(response);
             log.debug("API respondeu HTTP {}.", response.statusCode());
-            if (response.statusCode() == 401) autenticado = false;
+            if (response.statusCode() == 401) {
+                autenticado = false;
+                administrador = false;
+            }
             if (response.statusCode() >= 400) {
                 String mensagem = "A API não conseguiu atender à solicitação (" + response.statusCode() + ").";
                 try {
