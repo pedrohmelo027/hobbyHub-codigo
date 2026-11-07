@@ -1,0 +1,59 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/WEB-INF/templates/base.xhtml">
+    <ui:param name="paginaAtiva" value="manter-posts" />
+    <f:metadata>
+        <f:viewAction action="#{manterPostsBean.carregar}" />
+    </f:metadata>
+    <ui:define name="title">Moderação · HobbyHub</ui:define>
+    <ui:define name="content">
+        <main class="feed-main">
+            <div class="feed-heading">
+                <div><h1>Moderação de posts</h1><p>Remova publicações de outros usuários quando necessário.</p></div>
+            </div>
+            <ui:include src="/WEB-INF/templates/mensagens.xhtml" />
+            <ui:fragment rendered="#{empty manterPostsBean.posts}">
+                <section class="empty"><h2>Nenhum post de outro usuário para moderar.</h2></section>
+            </ui:fragment>
+            <section aria-label="Posts de outros usuários">
+                <ui:repeat value="#{manterPostsBean.posts}" var="post">
+                    <article class="post-card">
+                        <div class="post-header">
+                            <ui:include src="/WEB-INF/templates/avatar.xhtml">
+                                <ui:param name="classe" value="" />
+                                <ui:param name="foto" value="#{post.urlFotoPerfil}" />
+                            </ui:include>
+                            <strong class="post-author"><h:outputText value="#{post.autor}" /></strong>
+                            <div class="tags">
+                                <ui:repeat value="#{post.tags}" var="tag" varStatus="tagStatus">
+                                    <span class="#{tagStatus.index eq 0 ? 'tag-general' : 'tag-specific'}">
+                                        <h:outputText value="#{tag}" />
+                                    </span>
+                                </ui:repeat>
+                            </div>
+                        </div>
+                        <ui:fragment rendered="#{not empty post.urlImagem and not post.video}">
+                            <img class="post-image" src="#{request.contextPath}#{post.urlImagem}"
+                                 alt="Imagem compartilhada pelo autor" loading="lazy" />
+                        </ui:fragment>
+                        <ui:fragment rendered="#{not empty post.urlImagem and post.video}">
+                            <video class="post-image" src="#{request.contextPath}#{post.urlImagem}"
+                                   controls="controls" preload="metadata">
+                                Seu navegador não conseguiu reproduzir o vídeo.
+                            </video>
+                        </ui:fragment>
+                        <p class="content"><h:outputText value="#{post.conteudo}" /></p>
+                        <h:form id="acoes" styleClass="post-actions">
+                            <h:commandButton value="Apagar post" action="#{manterPostsBean.excluir(post)}"
+                                             styleClass="danger"
+                                             onclick="return confirm('Apagar este post e sua mídia? Esta ação não pode ser desfeita.');" />
+                        </h:form>
+                        <time class="post-date"><h:outputText value="#{post.dataFormatada}" /></time>
+                    </article>
+                </ui:repeat>
+            </section>
+        </main>
+    </ui:define>
+</ui:composition>

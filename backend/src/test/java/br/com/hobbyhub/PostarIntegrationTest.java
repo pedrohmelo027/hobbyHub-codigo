@@ -417,6 +417,28 @@ class PostarIntegrationTest {
     }
 
     @Test
+    void administradorPodeApagarPostAlheioMasNaoEditar() throws Exception {
+        Usuario admin = new Usuario();
+        admin.setNome("Administrador");
+        admin.setNomeUsuario("admin");
+        admin.setEmail("admin@teste.local");
+        admin.setSenha("senha-de-teste");
+        admin.setRole(Role.ADMIN);
+        usuarios.save(admin);
+
+        Long id = criarPostComMidia();
+        mvc.perform(patch("/api/posts/{id}", id).with(user("admin@teste.local")).with(csrf())
+                        .contentType("application/json").content("{\"conteudo\":\"Tentativa admin\"}"))
+                .andExpect(status().isForbidden());
+        assertThat(posts.findById(id).orElseThrow().getConteudo()).isEqualTo("Post com mídia");
+
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/posts/{id}", id)
+                        .with(user("admin@teste.local")).with(csrf()))
+                .andExpect(status().isNoContent());
+        assertThat(posts.existsById(id)).isFalse();
+    }
+
+    @Test
     void excluirRemovePostVinculosEMidia() throws Exception {
         Long id = criarPostComMidia();
         String url = posts.findAllByOrderByDataCriacaoDescIdDesc().getFirst().getUrlImagem();

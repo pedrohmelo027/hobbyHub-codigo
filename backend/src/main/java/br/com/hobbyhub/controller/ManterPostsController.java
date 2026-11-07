@@ -35,7 +35,7 @@ public class ManterPostsController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Excluir um post próprio e sua mídia",
+    @Operation(summary = "Excluir um post próprio ou moderar post como administrador",
             parameters = @Parameter(name = "X-CSRF-TOKEN", in = ParameterIn.HEADER, required = true))
     public ResponseEntity<Void> excluir(@PathVariable Long id, Principal principal) {
         manterPostsService.excluir(id, principal.getName());
