@@ -22,15 +22,23 @@ public class AcessoFilter implements Filter {
         HttpServletRequest requisicao = (HttpServletRequest) request;
         HttpServletResponse resposta = (HttpServletResponse) response;
         String caminho = requisicao.getServletPath();
-        if ((caminho.startsWith("/visualizar-posts/") || caminho.startsWith("/postar/")
-                || caminho.startsWith("/midias/") || caminho.startsWith("/editar-perfil/")
-                || caminho.startsWith("/visualizar-perfil/") || caminho.startsWith("/manter-tags/"))
-                && !api.isAutenticado()) {
+        boolean paginaProtegida = caminho.startsWith("/visualizar-posts/")
+                || caminho.startsWith("/postar/")
+                || caminho.startsWith("/midias/")
+                || caminho.startsWith("/editar-perfil/")
+                || caminho.startsWith("/visualizar-perfil/")
+                || caminho.startsWith("/manter-tags/")
+                || caminho.startsWith("/manter-posts/");
+        if (paginaProtegida && !api.isAutenticado()) {
             if (caminho.startsWith("/midias/")) resposta.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             else resposta.sendRedirect(requisicao.getContextPath() + "/logar/login.xhtml");
             return;
         }
         if (caminho.startsWith("/manter-tags/") && !api.isAdministrador()) {
+            resposta.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+        if (caminho.startsWith("/manter-posts/") && !api.isAdministrador()) {
             resposta.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
