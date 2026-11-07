@@ -1,0 +1,83 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/WEB-INF/templates/base.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{manterTagsBean.carregar}" />
+    </f:metadata>
+    <ui:define name="title">Manter tags · HobbyHub</ui:define>
+    <ui:define name="content">
+        <main class="feed-main tag-admin">
+            <p class="eyebrow">ADMINISTRAÇÃO</p>
+            <h1>Manter tags</h1>
+            <ui:include src="/WEB-INF/templates/mensagens.xhtml" />
+            <h:form id="tagForm" styleClass="card tag-admin-form">
+                <h2>#{empty manterTagsBean.form.id ? 'Nova tag' : 'Editar tag'}</h2>
+                <h:outputLabel for="nome" value="Nome *" />
+                <h:inputText id="nome" value="#{manterTagsBean.form.nome}" required="true"
+                             requiredMessage="Informe o nome da tag." maxlength="100" />
+                <h:outputLabel for="tipo" value="Tipo *" />
+                <h:selectOneMenu id="tipo" value="#{manterTagsBean.form.tipo}" required="true">
+                    <f:selectItem itemValue="GERAL" itemLabel="Geral" />
+                    <f:selectItem itemValue="ESPECIFICA" itemLabel="Específica" />
+                    <f:ajax execute="@this" render="tagGeral" />
+                </h:selectOneMenu>
+                <h:panelGroup id="tagGeral" layout="block">
+                    <h:panelGroup layout="block" rendered="#{manterTagsBean.form.tipo eq 'ESPECIFICA'}">
+                        <h:outputLabel for="geral" value="Tag geral *" />
+                        <h:selectOneMenu id="geral" value="#{manterTagsBean.form.tagGeralId}" required="true"
+                                         requiredMessage="Selecione uma tag geral.">
+                            <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+                            <f:selectItems value="#{manterTagsBean.tagsGerais}" var="geral"
+                                           itemValue="#{geral.id}" itemLabel="#{geral.nome}" />
+                        </h:selectOneMenu>
+                    </h:panelGroup>
+                </h:panelGroup>
+                <div class="tag-form-actions">
+                    <h:commandButton value="Salvar tag" action="#{manterTagsBean.salvar}" styleClass="tag-save" />
+                    <h:commandButton value="Limpar" action="#{manterTagsBean.novaTag}" immediate="true" styleClass="tag-clear" />
+                </div>
+            </h:form>
+            <section class="admin-tag-list" aria-label="Tags cadastradas por categoria">
+                <ui:fragment rendered="#{empty manterTagsBean.tagsGerais}">
+                    <p class="empty">Nenhuma tag geral cadastrada.</p>
+                </ui:fragment>
+                <ui:repeat value="#{manterTagsBean.tagsGerais}" var="geral">
+                    <details class="tag-group">
+                        <summary class="tag-group-summary">
+                            <span class="tag-summary-name">
+                                <strong><h:outputText value="#{geral.nome}" /></strong>
+                                <span class="tag-type tag-type-general">Geral</span>
+                            </span>
+                            <span class="tag-summary-count"><h:outputText value="#{manterTagsBean.resumoEspecificas(geral)}" /></span>
+                        </summary>
+                        <h:form styleClass="tag-actions">
+                            <h:commandButton value="Editar geral" action="#{manterTagsBean.editar(geral)}" styleClass="secondary" />
+                            <h:commandButton value="Remover geral" action="#{manterTagsBean.excluir(geral)}" styleClass="danger"
+                                             onclick="return confirm('Remover esta tag geral?');" />
+                        </h:form>
+                        <ui:fragment rendered="#{empty manterTagsBean.tagsEspecificas(geral)}">
+                            <p class="tag-empty">Nenhuma tag específica nesta categoria.</p>
+                        </ui:fragment>
+                        <div class="tag-specific-list">
+                            <ui:repeat value="#{manterTagsBean.tagsEspecificas(geral)}" var="especifica">
+                                <article class="tag-specific-row">
+                                    <span class="tag-summary-name">
+                                        <strong><h:outputText value="#{especifica.nome}" /></strong>
+                                        <span class="tag-type tag-type-specific">Específica</span>
+                                    </span>
+                                    <h:form styleClass="tag-actions">
+                                        <h:commandButton value="Editar" action="#{manterTagsBean.editar(especifica)}" styleClass="secondary" />
+                                        <h:commandButton value="Remover" action="#{manterTagsBean.excluir(especifica)}" styleClass="danger"
+                                                         onclick="return confirm('Remover esta tag específica?');" />
+                                    </h:form>
+                                </article>
+                            </ui:repeat>
+                        </div>
+                    </details>
+                </ui:repeat>
+            </section>
+        </main>
+    </ui:define>
+</ui:composition>
