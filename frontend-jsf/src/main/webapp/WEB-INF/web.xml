@@ -65,6 +65,18 @@
         <filter-name>AcessoFilter</filter-name>
         <url-pattern>/midias/*</url-pattern>
     </filter-mapping>
+    <error-page>
+        <error-code>403</error-code>
+        <location>/erro/403.xhtml</location>
+    </error-page>
+    <error-page>
+        <error-code>404</error-code>
+        <location>/erro/404.xhtml</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/erro/500.xhtml</location>
+    </error-page>
     <session-config>
         <session-timeout>30</session-timeout>
         <cookie-config>
