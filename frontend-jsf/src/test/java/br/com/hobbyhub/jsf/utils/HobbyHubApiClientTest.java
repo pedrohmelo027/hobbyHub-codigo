@@ -1,6 +1,7 @@
 package br.com.hobbyhub.jsf.utils;
 
 import br.com.hobbyhub.jsf.dto.PostFormDTO;
+import br.com.hobbyhub.jsf.dto.CadastrarUsuarioFormDTO;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.AfterEach;
@@ -26,6 +27,8 @@ class HobbyHubApiClientTest {
     private final AtomicReference<String> csrfRecebido = new AtomicReference<>();
     private final AtomicReference<String> postagem = new AtomicReference<>();
     private final AtomicReference<String> tipoPostagem = new AtomicReference<>();
+    private final AtomicReference<String> cookieNoCadastro = new AtomicReference<>();
+    private final AtomicReference<String> csrfNoCadastro = new AtomicReference<>();
 
     @BeforeEach
     void iniciarApiDeTeste() throws IOException {
@@ -42,6 +45,11 @@ class HobbyHubApiClientTest {
             csrfRecebido.set(exchange.getRequestHeaders().getFirst("X-CSRF-TOKEN"));
             exchange.getResponseHeaders().add("Set-Cookie", "HOBBYHUB_API=sessao-teste; Path=/; HttpOnly");
             responder(exchange, 200, "{\"email\":\"ana@teste.local\"}");
+        });
+        servidor.createContext("/api/usuarios", exchange -> {
+            cookieNoCadastro.set(exchange.getRequestHeaders().getFirst("Cookie"));
+            csrfNoCadastro.set(exchange.getRequestHeaders().getFirst("X-CSRF-TOKEN"));
+            responder(exchange, 201, "{}");
         });
         servidor.createContext("/api/posts", exchange -> {
             cookieRecebido.set(exchange.getRequestHeaders().getFirst("Cookie"));
@@ -74,6 +82,21 @@ class HobbyHubApiClientTest {
         assertThat(tipoPostagem.get()).isEqualTo("application/json");
         assertThat(postagem.get()).contains("Meu hobby", "tagGeralId", "tagEspecificaId");
         assertThat(postagem.get()).doesNotContain("senha", "usuarioId");
+    }
+
+    @Test
+    void cadastroEnviaCookieDaSessaoQueForneceuTokenCsrf() {
+        var client = novoCliente();
+        var form = new CadastrarUsuarioFormDTO();
+        form.setNome("Pessoa Teste");
+        form.setEmail("pessoa@teste.local");
+        form.setNomeUsuario("pessoa teste");
+        form.setSenha("senha");
+
+        client.cadastrarUsuario(form, null);
+
+        assertThat(cookieNoCadastro.get()).contains("HOBBYHUB_API=csrf-sessao");
+        assertThat(csrfNoCadastro.get()).isEqualTo("token-teste");
     }
 
     @Test
