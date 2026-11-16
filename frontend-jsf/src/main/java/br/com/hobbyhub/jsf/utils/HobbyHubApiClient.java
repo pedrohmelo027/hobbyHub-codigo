@@ -151,7 +151,7 @@ public class HobbyHubApiClient implements Serializable {
     }
 
     public VisualizarPerfilDTO visualizarPerfil(String nomeUsuario) {
-        return ler(enviar(requisicao("api/perfis/" + codificar(nomeUsuario)).GET()), VisualizarPerfilDTO.class);
+        return ler(enviar(requisicao("api/perfis/" + codificarSegmento(nomeUsuario)).GET()), VisualizarPerfilDTO.class);
     }
 
     public void editarPerfil(EditarPerfilFormDTO form) {
@@ -187,7 +187,8 @@ public class HobbyHubApiClient implements Serializable {
 
     public void cadastrarUsuario(CadastrarUsuarioFormDTO form, Part foto) {
         try {
-            HttpRequest.Builder request = requisicao("api/usuarios").header("X-CSRF-TOKEN", csrf());
+            String token = csrf();
+            HttpRequest.Builder request = requisicao("api/usuarios").header("X-CSRF-TOKEN", token);
             if (foto == null || foto.getSize() == 0) {
                 enviar(request.header("Content-Type", "application/json")
                         .POST(HttpRequest.BodyPublishers.ofByteArray(JSON.writeValueAsBytes(form))));
@@ -376,5 +377,9 @@ public class HobbyHubApiClient implements Serializable {
 
     private String codificar(String valor) {
         return URLEncoder.encode(valor == null ? "" : valor, StandardCharsets.UTF_8);
+    }
+
+    private String codificarSegmento(String valor) {
+        return codificar(valor).replace("+", "%20");
     }
 }
